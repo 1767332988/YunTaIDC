@@ -36,8 +36,13 @@ if(!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['em
     }
     $invite = $_SESSION['invite'];
   	$domain = $_SERVER['HTTP_HOST'];
-  	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `domain`='{$domain}'")->fetch_assoc();
-  	$site = $site['id'];
+  	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `domain`='{$domain}'");
+  	if($site->num_rows == 0){
+  		$site = 0;
+  	}else{
+  		$site = $site->fetch_assoc();
+  		$site = $site['id'];
+  	}
   	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `default`='1'");
   	if($grade->num_rows == 1){
   		$grade = $grade->fetch_assoc();
