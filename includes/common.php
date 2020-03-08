@@ -1,5 +1,5 @@
 <?php
-//error_reporting(0);
+error_reporting(0);
 define("CACHE_FILE", 0);
 define("IN_CRONLITE", true);
 define("SYSTEM_ROOT", dirname(__FILE__) . "/");
