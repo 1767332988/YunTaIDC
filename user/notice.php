@@ -29,13 +29,15 @@ while($row = $result->fetch_assoc()){
 	);
 	$notice_template_new = $notice_template_new . template_code_replace($notice_template[1][0], $notice_template_code);
 }
-$result = $DB->query("SELECT * FROM `ytidc_notice` WHERE `site`='{$site['id']}'");
-while($row = $result->fetch_assoc()){
-	$notice_template_code = array(
-		'id' => $row['id'],
-		'title' => $row['title'],
-	);
-	$notice_template_new = $notice_template_new . template_code_replace($notice_template[1][0], $notice_template_code);
+if($site['id'] != 0){
+	$result = $DB->query("SELECT * FROM `ytidc_notice` WHERE `site`='{$site['id']}'");
+	while($row = $result->fetch_assoc()){
+		$notice_template_code = array(
+			'id' => $row['id'],
+			'title' => $row['title'],
+		);
+		$notice_template_new = $notice_template_new . template_code_replace($notice_template[1][0], $notice_template_code);
+	}
 }
 $template = str_replace($notice_template[0][0], $notice_template_new, $template);
 $template_code = array(
