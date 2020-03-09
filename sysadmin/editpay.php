@@ -76,7 +76,7 @@ $plugins_file = get_dir(ROOT."/plugins/payment/");
               <label>接口状态</label>
               <select name="status" class="form-control m-b">
               	<?php
-              		if($v == $row['gateway']){
+              		if($row['status'] == 1){
               			echo '
               	<option value="1" selected>开启</option>
               	<option value="0">关闭</option>';
