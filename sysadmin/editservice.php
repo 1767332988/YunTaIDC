@@ -21,7 +21,7 @@ if($act == "edit"){
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
       	if($k == 'password'){
-      		$v = base64_encode($v);
+      		$value = base64_encode($value);
       	}
       	$DB->query("UPDATE `ytidc_service` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
     }
