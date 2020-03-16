@@ -11,7 +11,7 @@ if(!empty($_POST['displayname']) && !empty($_POST['gateway']) && !empty($_POST['
   	$gateway = daddslashes($_POST['gateway']);
   	$fee = daddslashes($_POST['fee']);
   	$status = daddslashes($_POST['status']);
-  	$DB->query("INSERT INTO `ytidc_payplugin`(`displayname`, `gateway`, `fee`, `status`) VALUES ('{$displayname}','{$gateway}','{$fee}','{$status}')");
+  	$DB->query("INSERT INTO `ytidc_payplugin`(`displayname`, `gateway`, `fee`, `configoption`, `status`) VALUES ('{$displayname}','{$gateway}','{$fee}','','{$status}')");
   	$newid = $DB->query("select MAX(id) from `ytidc_payplugin`")->fetch_assoc();
   	$newid = $newid['MAX(id)'];
 	@header("Location: ./editpay.php?id={$newid}");
