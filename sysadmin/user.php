@@ -42,7 +42,7 @@ include("./head.php");
                     <td>'.$row['username'].'</td>
                     <td>'.$row['email'].'</td>
                     <td>'.$row['money'].'</td>
-                    <td><a href="./edituser.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./edituser.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                    <td><a href="./edituser.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./addfund.php?id='.$row['id'].'" class="btn btn-info btn-xs btn-small">加款/减款</a><a href="./loginuser.php?id='.$row['id'].'" class="btn btn-success btn-xs btn-small">登陆用户</a><a href="./edituser.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
                   </tr>';
                   	 }
                   	?>
