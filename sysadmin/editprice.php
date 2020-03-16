@@ -26,6 +26,7 @@ if($act == "del"){
 if($act == "edit"){
   	$price = json_encode($_POST['price']);
   	$name = daddslashes($_POST['name']);
+  	$weight = daddslashes($_POST['weight']);
     $default = daddslashes($_POST['default']);
     $need_paid = daddslashes($_POST['need_paid']);
     $need_save = daddslashes($_POST['need_save']);
@@ -34,7 +35,7 @@ if($act == "edit"){
         $DB->query("UPDATE `ytidc_grade` SET `default`='0' WHERE `default`='1'");
         $DB->query("UPDATE `ytidc_grade` SET `default`='1' WHERE `id`='{$id}'");
     }
-  	$DB->query("UPDATE `ytidc_grade` SET `name`='{$name}', `price`='{$price}', `need_save`='{$need_save}', `need_money`='{$need_money}', `need_paid`='{$need_paid}' WHERE `id`='{$id}'");
+  	$DB->query("UPDATE `ytidc_grade` SET `name`='{$name}', `weight`='{$weight}', `price`='{$price}', `need_save`='{$need_save}', `need_money`='{$need_money}', `need_paid`='{$need_paid}' WHERE `id`='{$id}'");
   	if($DB->error){
       	$error_log = file_get_contents(ROOT."logs/system_error.log");
       	$error_log = $error_log .  $return['status'] .":" . $return['msg'] . "\r\n";
