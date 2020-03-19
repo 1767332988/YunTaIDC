@@ -57,10 +57,6 @@ $password = base64_decode($row['password']);
               <input name="password" type="password" class="form-control" placeholder="用户密码" value="<?=$password?>">
             </div>
             <div class="form-group">
-              <label>用户余额</label>
-              <input name="money" type="text" class="form-control" placeholder="用户余额" value="<?=$row['money']?>">
-            </div>
-            <div class="form-group">
               <label>用户价格组</label>
               <select name="grade" class="form-control">
               	<?php while($row2 = $grade->fetch_assoc()){
