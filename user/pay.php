@@ -24,7 +24,7 @@ $gateway = $DB->query("SELECT * FROM `ytidc_payplugin` WHERE `status`='1'");
 $gateway_template = find_list_html("支付通道列表", $template);
 while($row = $gateway->fetch_assoc()){
 	$gateway_template_code = array(
-		'gateway' => $row['gateway'],
+		'gateway' => $row['id'],
 		'displayname' => $row['displayname'],
 		'fee' => $row['fee'],
 	);
