@@ -1,7 +1,7 @@
 <?php
 
 include("./includes/common.php");
-$custom = daddslashes($_GET['custom']);
+$custom = daddslashes($_GET['page']);
 if(empty($custom)){
 	@header("Location: ./index.php");
 	exit;
