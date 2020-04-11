@@ -17,7 +17,14 @@ function XiaoYu_Example_RenewService($params){
     );
 }
 
-function XiaoYu_example_DeleteService($params){
+function XIaoYu_Example_ConnectServer($params){
+	return array(
+		'status' => 'success',
+		'msg' => '测试成功'
+	);
+}
+
+function XiaoYu_Example_DeleteService($params){
 	return array(
 		'status' => 'success',
 		'msg' => '删除成功',
