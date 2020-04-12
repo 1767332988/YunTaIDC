@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('worder_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,18 +19,25 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
+	if(!in_array('*', $permission) && !in_array('worder_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
   	$DB->query("DELETE FROM `ytidc_worder` WHERE `id`='{$id}'");
   	@header("Location: ./worder.php");
   	exit;
 }
 if($act == "edit"){
   	$reply = daddslashes($_POST['reply']);
-  	$DB->query("UPDATE `ytidc_worder` SET `reply`='{$reply}', `status`='已回复' WHERE `id`='{$id}'");
+  	$time = date('Y-m-d H:i:s');
+  	$DB->query("INSERT INTO `ytidc_wreply`(`person`, `content`, `worder`, `time`) VALUES ('{$_SESSION['admin']}','{$reply}','{$id}','{$time}')");
+  	$DB->query("UPDATE `ytidc_worder` SET `status`='已回复' WHERE `id`='{$id}'");
   	@header("Location: ./worder.php");
   	exit;
 }
 include("./head.php");
 $row = $DB->query("SELECT * FROM `ytidc_worder` WHERE `id`='{$id}'")->fetch_assoc();
+$reply = $DB->query("SELECT * FROM `ytidc_wreply` WHERE `worder`='{$row['id']}'");
 ?>
 <div class="bg-light lter b-b wrapper-md">
   <h1 class="m-n font-thin h3">回复工单</h1>
@@ -41,13 +54,18 @@ $row = $DB->query("SELECT * FROM `ytidc_worder` WHERE `id`='{$id}'")->fetch_asso
               <input type="text" class="form-control" placeholder="工单题目" value="<?=$row['title']?>" disabled="">
             </div>
             <div class="form-group">
-              <label>服务密码</label>
-              <textarea class="form-control" placeholder="工单内容" disabled><?=$row['content']?></textarea>
-            </div>
-            <div class="form-group">
-              <label>回复工单</label>
-              <textarea class="form-control" placeholder="回复内容" name="reply"><?=$row['reply']?></textarea>
-            </div>
+	           <label>回复工单</label>
+	           <textarea class="form-control" name="reply"></textarea>
+	        </div>
+            <?php
+            	while($row2 = $reply->fetch_assoc()){
+	            	echo '
+	            <div class="form-group">
+	              <label>'.$row2['person'].'（'.$row2['time'].'）</label>
+	              <textarea class="form-control" disabled>'.$row2['content'].'</textarea>
+	            </div>';
+            	}
+            ?>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>
         </div>

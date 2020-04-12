@@ -63,6 +63,17 @@ if($product['status'] != 1){
     );
   	 exit(json_encode($retdata));
 }
+
+if($product['limit'] != 0){
+	$userservice = $DB->qiery("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
+	if($userservice >= $product['limit']){
+		$retdata = array(
+			'ret' => 'fail',
+			'msg' => '开通数量已达上限',
+		);
+		exit(json_encode($retdata));
+	}
+}
 $server = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$product['server']}'");
 if($server->num_rows != 1){
   	$retdata = array(
@@ -74,10 +85,18 @@ if($server->num_rows != 1){
 	$server = $server->fetch_assoc();
 }
 
-if($user['grade'] == "0" || $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->num_rows != 1){
-  	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `default`='1'")->fetch_assoc();
-}else{
+if($user['grade'] != "0" && $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->num_rows == 1){
   	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->fetch_assoc();
+	$price = json_decode($grade['price'], true);
+	$discount = $price[$product['id']];
+	if(empty($discount)){
+		$discount = $price['*'];
+		if(empty($discount)){
+			$discount = 100;
+		}
+	}
+}else{
+	$discount = 100;
 }
 $price = json_decode($grade['price'], true);
 $pdis = json_decode(url_decode($product['time']),true);
@@ -85,7 +104,7 @@ foreach($pdis as $k => $v){
 	if($v['name'] == $params['time']){
 		$dis = array(
 			'name' => $v['name'],
-			'discount' => $v['discount'],
+			'price' => $v['price'],
 			'day' => $v['day'],
 			'remark' => $v['remark'],
 		);
@@ -99,9 +118,9 @@ if(empty($dis)){
   	 exit(json_encode($retdata));
 }
 if(empty($params['promo_code'])){
-	$price = $price[$product['id']] * $dis['discount'];
+	$price = $dis['price'] * $discount / 100;
 }else{
-	$price = $price[$product['id']] * $dis['discount'];
+	$price = $dis['price'] * $discount / 100;
 	$promo = $DB->query("SELECT * FROM `ytidc_promo` WHERE `code`='{$params['promo_code']}'");
 	if($promo->num_rows != 1){
 	  	$retdata = array(
@@ -143,7 +162,7 @@ if(!check_price($price, true)){
   	 exit(json_encode($retdata));
 }
 if($user['site'] != 0){
-	$usersite = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `id`='{$user['site']}'");
+	$usersite = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `id`='{$user['site']}'");
 	if($usersite->num_rows != 1){
 		$usersite = $site;
 	}else{
@@ -165,13 +184,21 @@ if($user['site'] != 0){
 			}
 			if($usersiteownergrade['weight'] >= $grade['weight']){
 				$usersiteownerprice = json_decode($usersiteownergrade['price'] ,true);
+				$usersiteownerprice2 = $usersiteownerprice[$product['id']];
+				if(empty($usersiteownerprice2)){
+					$usersiteownerprice2 = $usersiteownerprice['*'];
+					if(empty($usersiteownerprice2)){
+						$usersiteownerprice2 = 100;
+					}
+				}
 				//总共奖励金额计算：用户价格组价格 - 分站价格组价格
-				$usersiteownerprice = $usersiteownerprice[$product['id']] * $dis['discount'];
+				$usersiteownerprice = $usersiteownerprice2 * $dis['price'] / 100;
 				$usersitemoneyprice = $price -  $usersiteownerprice;
 				//必须要大于1块钱才会进行邀请返现，防止出现过小金额
 				if($usersitemoneyprice >= 1){
 					//若有邀请者，检查邀请者是否存在，分站后台设置邀请返现是否合理，防止刷余额情况
-					if(!empty($user['invite']) && $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->num_rows == 1 && $usersite['invitepercent'] < 100){
+					// 2.4添加修复：检查若邀请上级为分站站长
+					if(!empty($user['invite']) && $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->num_rows == 1 && $usersite['invitepercent'] < 100 && $user['invite'] != $site['user']){
 						//邀请奖励
 						$invite = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->fetch_assoc();
 						//邀请者奖励金额计算：总共奖励金额 * 分站设置邀请返现比例
@@ -204,7 +231,14 @@ if($user['site'] != 0){
 		//邀请者奖励金额计算：(订单金额 - 最高等级价格) * 分站设置邀请返现比例
 		$highgrade = $DB->query("SELECT * FROM `ytidc_grade` ORDER BY `weight` DESC")->fetch_assoc();
 		$highgradeprice = json_decode($highgrade['price'], true);
-		$highgradeprice =  $highgradeprice[$product['id']] * $dis['discount'];
+		$highgradeprice2 = $highgradeprice[$product['id']];
+		if(empty($highgradeprice2)){
+			$highgradeprice2 = $highgradeprice['*'];
+			if(empty($highgradeprice2)){
+				$highgradeprice2 = 100;
+			}
+		}
+		$highgradeprice =  $highgradeprice2 * $dis['price'] / 100;
 		$inviteprice = $price - $highgradeprice;
 		$giftmoney = $inviteprice * $conf['invitepercent'] / 100;
 		//再次检查返现是否超出总计奖励金额

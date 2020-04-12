@@ -1,29 +1,25 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}
 }
 $title = daddslashes($_POST['title']);
 $content = daddslashes($_POST['content']);
 if(!empty($title) && !empty($content)){
-	$DB->query("INSERT INTO `ytidc_worder`(`title`, `content`, `reply`, `user`, `status`) VALUES ('{$title}','{$content}','','{$user['id']}','待回复')");
+	$DB->query("INSERT INTO `ytidc_worder`(`title`, `user`, `status`) VALUES ('{$title}','{$user['id']}','待回复')");
+	$newid = $DB->query("select MAX(id) from `ytidc_worder`")->fetch_assoc();
+  	$newid = $newid['MAX(id)'];
+  	$time = date('Y-m-d H:i:s');
+	$DB->query("INSERT INTO `ytidc_wreply`(`person`, `content`, `worder`, `time`) VALUES ('{$user['username']}','{$content}','{$newid}','{$time}')");
 	@header("Location: ./msg.php?msg=提交成功，请等待处理！");
 	exit;
 }

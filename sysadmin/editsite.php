@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('site_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,20 +19,24 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
-  	$DB->query("DELETE FROM `ytidc_fenzhan` WHERE `id`='{$id}'");
+	if(!in_array('*', $permission) && !in_array('site_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
+  	$DB->query("DELETE FROM `ytidc_subsite` WHERE `id`='{$id}'");
   	@header("Location: ./site.php");
   	exit;
 }
 if($act == "edit"){
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
-      	$DB->query("UPDATE `ytidc_fenzhan` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
+      	$DB->query("UPDATE `ytidc_subsite` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
     }
   	@header("Location: ./editsite.php?id={$id}");
   	exit;
 }
 include("./head.php");
-$row = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `id`='{$id}'")->fetch_assoc();
+$row = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'")->fetch_assoc();
 ?>
 <div class="bg-light lter b-b wrapper-md">
   <h1 class="m-n font-thin h3">编辑分站</h1>

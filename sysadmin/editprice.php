@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('price_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -14,6 +20,10 @@ if(empty($id)){
 $row = $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$id}'")->fetch_assoc();
 $act = daddslashes($_GET['act']);
 if($act == "del"){
+	if(!in_array('*', $permission) && !in_array('price_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 	if($DB->query("SELECT * FROM `ytidc_user` WHERE `grade`='{$id}'")->num_rows >= 1){
 		@header("location: ./msg.php?msg=该价格组尚有用户使用，暂时无法删除。");
 		exit;
@@ -24,18 +34,8 @@ if($act == "del"){
 	}
 }
 if($act == "edit"){
-  	$price = json_encode($_POST['price']);
-  	$name = daddslashes($_POST['name']);
-  	$weight = daddslashes($_POST['weight']);
-    $default = daddslashes($_POST['default']);
-    $need_paid = daddslashes($_POST['need_paid']);
-    $need_save = daddslashes($_POST['need_save']);
-    $need_money = daddslashes($_POST['need_money']);
-    if($default == '1'){
-        $DB->query("UPDATE `ytidc_grade` SET `default`='0' WHERE `default`='1'");
-        $DB->query("UPDATE `ytidc_grade` SET `default`='1' WHERE `id`='{$id}'");
-    }
-  	$DB->query("UPDATE `ytidc_grade` SET `name`='{$name}', `weight`='{$weight}', `price`='{$price}', `need_save`='{$need_save}', `need_money`='{$need_money}', `need_paid`='{$need_paid}' WHERE `id`='{$id}'");
+  	$params = daddslashes($_POST);
+  	$DB->query("UPDATE `ytidc_grade` SET `name`='{$params['name']}',`description`='{$params['description']}',`weight`='{$params['weight']}',`need_paid`='{$params['need_paid']}',`need_money`='{$params['need_money']}',`need_save`='{$params['need_save']}',`default`='{$params['default']}' WHERE `id`='{$id}'");
   	if($DB->error){
       	$error_log = file_get_contents(ROOT."logs/system_error.log");
       	$error_log = $error_log .  $return['status'] .":" . $return['msg'] . "\r\n";
@@ -61,6 +61,10 @@ $price = json_decode($row['price'], true);
             <div class="form-group">
               <label>价格组名称：</label>
               <input type="text" name="name" class="form-control" placeholder="价格组名称" value="<?=$row['name']?>">
+            </div>
+            <div class="form-group">
+              <label>价格组介绍</label>
+              <textarea name="description" class="form-control" row="6"><?=$row['description']?></textarea>
             </div>
             <div class="form-group">
               <label>是否设置为默认</label>
@@ -89,13 +93,6 @@ $price = json_decode($row['price'], true);
               <label>开通价格（最后使用，0为不启用）</label>
               <input type="number" name="need_money" class="form-control" placeholder="开通价格" value="<?=$row['need_money']?>">
             </div>
-            <?php
-                while($row2 = $product->fetch_assoc()){
-                    echo '<div class="form-group">
-                          <label>产品【'.$row2['name'].'】的价格</label>
-                          <input name="price['.$row2['id'].']" type="text" class="form-control" id="price" placeholder="产品【'.$row2['name'].'】的价格" value="'.$price[$row2['id']].'"  oninput="value=value.replace(/[^\d.]/g,\'\')">
-                          </div>';
-                }?>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>
         </div>

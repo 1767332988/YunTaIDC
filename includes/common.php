@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 define("CACHE_FILE", 0);
 define("IN_CRONLITE", true);
 define("SYSTEM_ROOT", dirname(__FILE__) . "/");
@@ -27,6 +27,7 @@ if(is_file(SYSTEM_ROOT.'360safe/360webscan.php')){//360网站卫士
     require_once(SYSTEM_ROOT.'360safe/360webscan.php');
 }
 include_once(SYSTEM_ROOT.'security.php');
+require_once(SYSTEM_ROOT.'cloud.class.php');
 require(ROOT."config.php");
 if (!$dbconfig["user"] || !$dbconfig["pass"] || !$dbconfig["name"]) {
 	header("Content-type:text/html;charset=utf-8");
@@ -45,7 +46,7 @@ if(ismobile()){
 }else{
 	$template_name = $conf['template'];
 }
-$siteconf = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `domain`='{$domain}'");
+$siteconf = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `domain`='{$domain}'");
 if($siteconf->num_rows == 0){
   	$site = array(
   		'id' => '0',

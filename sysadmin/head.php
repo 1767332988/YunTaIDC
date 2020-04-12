@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>仪表盘 | 云塔IDC系统v2.3</title>
+  <title>仪表盘 | 云塔IDC系统v2.4</title>
   <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-  <link rel="stylesheet" href="css/animate.css" type="text/css" />
-  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
-  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
-  <link rel="stylesheet" href="css/font.css" type="text/css" />
-  <link rel="stylesheet" href="css/app.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/app.css" type="text/css" />
 </head>
 <body>
   <div class="app app-header-fixed" id="app">
@@ -27,8 +27,8 @@
         <!-- brand -->
         <a href="#/" class="navbar-brand text-lt">
           <i class="fa fa-cloud"></i>
-          <img src="img/logo.png" alt="." class="hide">
-          <span class="hidden-folded m-l-xs">云塔v2.3</span>
+          <img src="/assets/img/logo.png" alt="." class="hide">
+          <span class="hidden-folded m-l-xs">云塔v2.4</span>
         </a>
         <!-- / brand -->
       </div>
@@ -174,14 +174,13 @@
                 </ul>
               </li>
               <li>
-                <a ui-sref="app.calendar" href="/sysadmin/notice.php">
-                  <i class="glyphicon glyphicon-list icon text-primary-dker"></i>
-                  <span class="font-bold" translate="aside.nav.CALENDAR">公告管理</span>
-                  
+                <a ui-sref="app.calendar" href="/sysadmin/admin.php">
                   <span class="pull-right text-muted">
                     <i class="fa fa-fw fa-angle-right text"></i>
                     <i class="fa fa-fw fa-angle-down text-active"></i>
                   </span>
+                  <i class="glyphicon glyphicon-edit"></i>
+                  <span>协同操作管理</span>
                 </a>
               </li>
               <li>
@@ -195,22 +194,31 @@
                 </a>
                 <ul class="nav nav-sub dk">
                   <li ui-sref-active="active">
-                    <a ui-sref="layout.app" href="/sysadmin/config.php">
+                    <a ui-sref="layout.app" href="/sysadmin/setting.php?type=config">
                       <span>资料管理</span>
                     </a>
                   </li>
+                  </li><li ui-sref-active="active">
+                    <a ui-sref="layout.app" href="/sysadmin/notice.php">
+                      <span>公告管理</span>
+                    </a>
+                  </li>
                   <li ui-sref-active="active">
-                    <a ui-sref="layout.app" href="/sysadmin/smtp.php">
+                    <a ui-sref="layout.app" href="/sysadmin/setting.php?type=smtp">
                       <span>SMTP邮件管理</span>
                     </a>
                   </li>
                   <li ui-sref-active="active">
-                    <a ui-sref="layout.app" href="/sysadmin/template.php">
+                    <a ui-sref="layout.app" href="/sysadmin/setting.php?type=template">
                       <span>模板管理</span>
                     </a>
                   </li><li ui-sref-active="active">
-                    <a ui-sref="layout.app" href="/sysadmin/cloud.php">
+                    <a ui-sref="layout.app" href="/sysadmin/setting.php?type=cloud">
                       <span>云中心管理</span>
+                    </a>
+                  </li><li ui-sref-active="active">
+                    <a ui-sref="layout.app" href="/sysadmin/update.php">
+                      <span>系统更新</span>
                     </a>
                   </li>
                 </ul>

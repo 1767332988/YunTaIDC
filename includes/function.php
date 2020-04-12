@@ -128,4 +128,43 @@ function ismobile() {
 
 }
 
+function WriteLog($logfile, $content){
+	$time = date('Y-m-d H:i:s');
+	$content = "【{$time}】：{$content}\r\n";
+	if(file_put_contents($content, $logfile, FILE_APPEND)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function CheckEmail($email){
+$pattern="/([a-z0-9]*[-_.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[.][a-z]{2,3}([.][a-z]{2})?/i";
+	if(preg_match($pattern,$email)){
+	    return true;
+	} else{
+	    return false;
+	}
+}
+
+function getRealIp() {
+	$ip = false;
+	if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+		$ip = $_SERVER["HTTP_CLIENT_IP"];
+	}
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$ips = explode(", ", $_SERVER['HTTP_X_FORWARDED_FOR']);
+		if ($ip) {
+			array_unshift($ips, $ip);
+			$ip = FALSE;}
+		for ($i = 0; $i < count($ips); $i++) {
+			if (!preg_match("^(10│172.16│192.168).", $ips[$i])) {
+				$ip = $ips[$i];
+				break;
+			}
+		}
+	}
+	return ($ip ? $ip : $_SERVER['REMOTE_ADDR']);
+}
+
 ?>

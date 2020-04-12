@@ -1,15 +1,26 @@
 <?php
 
 include("../includes/common.php");
+if(!empty($_SESSION['admin']) && !empty($_SESSION['adminip'])){
+	$admin = daddslashes($_SESSION['admin']);
+	$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+	if($admin['lastip'] == getRealIp() && $_SESSION['adminip'] == getRealIp()){
+		@header("Location: ./index.php");
+		exit;
+	}
+}
 if(!empty($_POST['username']) && !empty($_POST['password'])){
-    $username = daddslashes($_POST['username']);
-    $password = daddslashes($_POST['password']);
-    if($username == $conf['admin'] && $password == $conf['password']){
-      	$_SESSION['adminlogin'] = md5($username.$password.$conf['domain']);
-      	@header("Location: ./index.php");
-      	exit;
+    $params = daddslashes($_POST);
+    $params['password'] = md5(md5($params['password']));
+    $ip = getRealIp();
+    if($DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$params['username']}' AND `password`='{$params['password']}'")->num_rows == 1){
+    	$DB->query("UPDATE `ytidc_admin` SET `lastip`='{$ip}' WHERE `username`='{$params['username']}'");
+    	$_SESSION['admin'] = $params['username'];
+    	$_SESSION['adminip'] = $ip;
+    	@header("Location: ./index.php");
+    	exit;
     }else{
-      	exit('账号密码错误！<a href="./login.php">点此重新登陆</a>');
+    	exit('账户密码错误！<a href="./login.php">点击重新登陆</a>');
     }
 }
 
@@ -18,22 +29,22 @@ if(!empty($_POST['username']) && !empty($_POST['password'])){
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>仪表盘 | 云塔IDC财务管理系统v2.3</title>
+  <title>仪表盘 | 云塔IDC财务管理系统v2.4</title>
   <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-  <link rel="stylesheet" href="css/animate.css" type="text/css" />
-  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
-  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
-  <link rel="stylesheet" href="css/font.css" type="text/css" />
-  <link rel="stylesheet" href="css/app.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/app.css" type="text/css" />
 </head>
 <body>
   <div class="app app-header-fixed  ">
 
 
     <div class="container w-xxl w-auto-xs" ng-controller="SigninFormController" ng-init="app.settings.container = false;">
-      <span class="navbar-brand block m-t">云塔IDC财务管理系统v2.3</span>
+      <span class="navbar-brand block m-t">云塔IDC财务管理系统v2.4</span>
       <div class="m-b-lg">
         <div class="wrapper text-center">
           <strong>您将在这里登陆,请输入超级管理员的帐号信息!</strong>
@@ -63,8 +74,8 @@ if(!empty($_POST['username']) && !empty($_POST['password'])){
     
     </div>
   <!-- jQuery -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/jquery/bootstrap.js"></script>
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+  <script src="/assets/vendor/jquery/bootstrap.js"></script>
   <script type="text/javascript">
     +function ($) {
       $(function(){

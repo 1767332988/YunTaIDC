@@ -25,7 +25,7 @@
                                             <label for="exampleInputEmail1">支付渠道</label>
                                             <select name="gateway" class="form-control">
                                             [支付通道列表]
-                                            <option value="[gateway]">[displayname]</option>
+                                            <option value="[gateway]">[name]</option>
                                             [/支付通道列表]
                                             </select>
                                         </div>

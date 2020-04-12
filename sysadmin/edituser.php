@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('user_read', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,6 +19,10 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
+	if(!in_array('*', $permission) && !in_array('user_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 	if($DB->query("SELECT * FROM `ytidc_service` WHERE `user`='{$id}'")->num_rows >= 1){
 		@header("Location: ./msg.php?msg=该用户尚有在线服务！");
 		exit;
@@ -23,6 +33,9 @@ if($act == "del"){
 	}
 }
 if($act == "edit"){
+	if(!in_array('*', $permission) && !in_array('user_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
       	if($k == "password"){
@@ -32,6 +45,19 @@ if($act == "edit"){
     }
   	@header("Location: ./edituser.php?id={$id}");
   	exit;
+}
+if($act == "login"){
+	if(!in_array('*', $permission) && !in_array('user_login', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
+	$ip = getRealIp();
+	$DB->query("UPDATE `ytidc_user` SET `lastip`='$ip' WHERE `id`='{$id}'");
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'")->fetch_assoc();
+	$_SESSION['ytidc_user'] = $user['username'];
+	$_SESSION['userip'] = $ip;
+	@header("Location: /user/index.php");
+	exit;
 }
 include("./head.php");
 $row = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'")->fetch_assoc();
@@ -78,6 +104,18 @@ $password = base64_decode($row['password']);
             <div class="form-group">
               <label>所属站点</label>
               <input name="site" type="text" class="form-control" placeholder="所属站点" value="<?=$row['site']?>">
+            </div>
+            <div class="form-group">
+              <label>用户状态</label>
+              <select name="status" class="form-control">
+              	<?php
+              		if($row['status'] == 1){
+              			echo '<option value="1" selected>正常</option><option value="0">冻结</option>';
+              		}else{
+              			echo '<option value="1">正常</option><option value="0" selected>冻结</option>';
+              		}
+              	?>
+              </select>
             </div>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>

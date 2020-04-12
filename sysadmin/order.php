@@ -1,9 +1,15 @@
 <?php
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('main_order', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -11,8 +17,12 @@ if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = 0;
 }
 $start = $page * 10;
-$title = "交易记录";
-$result = $DB->query("SELECT * FROM `ytidc_order` ORDER BY `orderid` DESC LIMIT {$start}, 10");
+$status = daddslashes($_GET['status']);
+if($status == "finish"){
+	$result = $DB->query("SELECT * FROM `ytidc_order` WHERE `status`='已完成' ORDER BY `orderid` DESC LIMIT {$start}, 10");
+}else{
+	$result = $DB->query("SELECT * FROM `ytidc_order` ORDER BY `orderid` DESC LIMIT {$start}, 10");
+}
 include("./head.php");
 ?>
         <div class="bg-light lter b-b wrapper-md">
@@ -21,7 +31,7 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              记录列表
+              记录列表  <a href="?status=finish" class="btn btn-primary btn-xs btn-small">只显示已完成</a>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">
@@ -57,16 +67,29 @@ include("./head.php");
 		          		if($page != 0){
 		          			echo '<li><a href="./order.php?page='.$page.'"><i class="fa fa-chevron-left"></i></a></li>';
 		          		}
-		          		$total = $DB->query("SELECT * FROM `ytidc_order`");
-		          		$records = $total->num_rows;
-		          		$total_pages = ceil($records / 10);
-		            	for($i = 1;$i <= $total_pages; $i++){
-		            		echo '<li><a href="./order.php?page='.$i.'">'.$i.'</a></li>';
-		            	}
-		            	if($page+2 <= $total_pages){
-		            		$next_page = $page + 2;
-		            		echo '<li><a href="./order.php?page='.$next_page.'"><i class="fa fa-chevron-right"></i></a></li>';
-		            	}
+		          		if($status == "finish"){
+							$total = $DB->query("SELECT * FROM `ytidc_order` WHERE `status`='已完成'");
+			          		$records = $total->num_rows;
+			          		$total_pages = ceil($records / 10);
+			            	for($i = 1;$i <= $total_pages; $i++){
+			            		echo '<li><a href="./order.php?status=finish&page='.$i.'">'.$i.'</a></li>';
+			            	}
+			            	if($page+2 <= $total_pages){
+			            		$next_page = $page + 2;
+			            		echo '<li><a href="./order.php?status=finish&page='.$next_page.'"><i class="fa fa-chevron-right"></i></a></li>';
+			            	}
+						}else{
+							$total = $DB->query("SELECT * FROM `ytidc_order`");
+			          		$records = $total->num_rows;
+			          		$total_pages = ceil($records / 10);
+			            	for($i = 1;$i <= $total_pages; $i++){
+			            		echo '<li><a href="./order.php?&page='.$i.'">'.$i.'</a></li>';
+			            	}
+			            	if($page+2 <= $total_pages){
+			            		$next_page = $page + 2;
+			            		echo '<li><a href="./order.php?&page='.$next_page.'"><i class="fa fa-chevron-right"></i></a></li>';
+			            	}
+						}
 		            ?>
 		            
 		          </ul>

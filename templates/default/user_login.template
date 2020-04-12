@@ -45,6 +45,10 @@
                                 <div class="control">
                                     <input type="password" name="password" class="form-control" placeholder="密码" />
                                 </div>
+                                <div class="control">
+                                    <input type="text" name="authcode" class="form-control" placeholder="验证码" />
+                                    <img src="/includes/vertifycode.php?code=[authcode]">
+                                </div>
                                 <div class="login-button text-center">
                                     <input type="submit" class="btn btn-primary" value="登陆">
                                     <a href="./register.php" class="btn btn-default">注册</a>

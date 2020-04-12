@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('server_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,6 +19,10 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
+	if(!in_array('*', $permission) && !in_array('server_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 	if($DB->query("SELECT * FROM `ytidc_product` WHERE `server`='{$id}'")->num_rows >= 1){
 		@header("Location: ./msg.php?msg=该服务器尚有产品使用，暂时无法删除。");
 		exit;
@@ -29,6 +39,29 @@ if($act == "edit"){
     }
   	@header("Location: ./editserver.php?id={$id}");
   	exit;
+}
+if($act == "connect"){
+	$server = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'")->fetch_assoc();
+	if(empty($server['plugin'])){
+		@header("Location: ./msg.php?msg=服务器尚未配置插件");
+		exit;
+	}else{
+		include(ROOT.'/plugins/server/'.$server['plugin'].'/main.php');
+		$function = $server['plugin'].'_ConnectServer';
+		if(function_exists($function)){
+			$result = $function($server);
+			if($result['status'] == 'fail'){
+				@header("Location: ./msg.php?msg=连接失败，返回信息：{$result['msg']}");
+				exit;
+			}else{
+				@header("Location: ./msg.php?msg=连接成功：返回信息：{$result['msg']}");
+				exit;
+			}
+		}else{
+			@header("Location: ./msg.php?msg=该服务器插件没有提供连接测试的功能!");
+			exit;
+		}
+	}
 }
 include("./head.php");
 $row = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'")->fetch_assoc();

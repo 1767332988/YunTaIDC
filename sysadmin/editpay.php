@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('pay_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,28 +19,34 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
-  	$DB->query("DELETE FROM `ytidc_payplugin` WHERE `id`='{$id}'");
+	if(!in_array('*', $permission) && !in_array('pay_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
+  	$DB->query("DELETE FROM `ytidc_gateway` WHERE `id`='{$id}'");
   	@header("Location: ./pay.php");
   	exit;
 }
 if($act == "edit"){
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
-      	$DB->query("UPDATE `ytidc_payplugin` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
+      	$DB->query("UPDATE `ytidc_gateway` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
     }
   	$configoption = json_encode(daddslashes($_POST['configoption']));
-  	$DB->query("UPDATE `ytidc_payplugin` SET `configoption`='{$configoption}' WHERE `id`='{$id}'");
+  	$DB->query("UPDATE `ytidc_gateway` SET `configoption`='{$configoption}' WHERE `id`='{$id}'");
   	@header("Location: ./editpay.php?id={$id}");
   	exit;
 }
-$row = $DB->query("SELECT * FROM `ytidc_payplugin` WHERE `id`='{$id}'")->fetch_assoc();
+$row = $DB->query("SELECT * FROM `ytidc_gateway` WHERE `id`='{$id}'")->fetch_assoc();
 $row['configoption'] = json_decode($row['configoption'], 1);
-$plugin = "../plugins/payment/".$row['gateway']."/main.php";
-if(!file_exists($plugin) || !is_file($plugin)){
-	@header("Location: ./msg.php?msg=插件文件不存在，请删除后重新添加！");
-	exit;
+if(!empty($row['gateway'])){
+	$plugin = "../plugins/payment/".$row['gateway']."/main.php";
+	if(!file_exists($plugin) || !is_file($plugin)){
+		@header("Location: ./msg.php?msg=插件文件不存在，请删除后重新添加！");
+		exit;
+	}
+	include($plugin);
 }
-include($plugin);
 include("./head.php");
 
 $plugins_file = get_dir(ROOT."/plugins/payment/");
@@ -51,7 +63,7 @@ $plugins_file = get_dir(ROOT."/plugins/payment/");
           <form role="form" action="./editpay.php?act=edit&id=<?=$id?>" method="POST">
             <div class="form-group">
               <label>显示名称</label>
-              <input type="text" name="displayname" class="form-control" placeholder="显示名称" value="<?=$row['displayname']?>">
+              <input type="text" name="name" class="form-control" placeholder="显示名称" value="<?=$row['name']?>">
             </div>
             <div class="form-group">
               <label>接口插件</label>
@@ -89,6 +101,7 @@ $plugins_file = get_dir(ROOT."/plugins/payment/");
               </select>
             </div>
             <?php
+            				if(!empty($row['gateway'])){
                                         if(function_exists($row['gateway']."_ConfigOption")){
                                         	$function = $row['gateway']."_ConfigOption";
                                         	$configoption = $function();
@@ -103,6 +116,12 @@ $plugins_file = get_dir(ROOT."/plugins/payment/");
                                         			echo '<div class="form-group">
                                             <label>【插件配置】：'.$v['label'].'</label>
                                             <input type="number" class="form-control" name="configoption['.$k.']" placeholder="'.$v['placeholder'].'" maxlength="256" value="'.$row['configoption'][$k].'">
+                                        </div>';
+                                        		}
+                                        		if($v['type'] == "textarea"){
+                                        			echo '<div class="form-group">
+                                            <label>【插件配置】：'.$v['label'].'</label>
+                                            <textarea class="form-control" name="configoption['.$k.']" placeholder="'.$v['placeholder'].'">'.$row['configoption'][$k].'</textarea>
                                         </div>';
                                         		}
                                         		if($v['type'] == "select"){
@@ -120,6 +139,7 @@ $plugins_file = get_dir(ROOT."/plugins/payment/");
                                         		}
                                         	}
                                         }
+            						}
             ?>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>

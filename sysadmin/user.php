@@ -1,9 +1,15 @@
 <?php
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('user_read', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -42,7 +48,7 @@ include("./head.php");
                     <td>'.$row['username'].'</td>
                     <td>'.$row['email'].'</td>
                     <td>'.$row['money'].'</td>
-                    <td><a href="./edituser.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./addfund.php?id='.$row['id'].'" class="btn btn-info btn-xs btn-small">加款/减款</a><a href="./loginuser.php?id='.$row['id'].'" class="btn btn-success btn-xs btn-small">登陆用户</a><a href="./edituser.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                    <td><a href="./edituser.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./addfund.php?id='.$row['id'].'" class="btn btn-info btn-xs btn-small">加款/减款</a><a href="./edituser.php?act=login&id='.$row['id'].'" class="btn btn-success btn-xs btn-small">登陆用户</a><a href="./edituser.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
                   </tr>';
                   	 }
                   	?>

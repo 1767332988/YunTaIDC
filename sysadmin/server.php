@@ -1,9 +1,26 @@
 <?php
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('server_read', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
+}
+if(daddslashes($_GET['act']) == 'add'){
+	if(in_array('*', $permission) || in_array('product_create', $permission)){
+		$name = "新建服务器".rand(100, 999);
+		$DB->query("INSERT INTO `ytidc_server`(`name`, `serverip`, `serverdomain`, `serverdns1`, `serverdns2`, `serverusername`, `serverpassword`, `serveraccesshash`, `servercpanel`, `serverport`, `plugin`, `status`) VALUES ('{$name}','','','','','','','','','','','1')");
+		@header("Location: ./server.php");
+		exit;
+	}else{
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -21,7 +38,7 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              服务器列表<a href="./addserver.php" class="btn btn-primary btn-xs btn-small">添加</a>
+              服务器列表<a href="./server.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">
@@ -38,7 +55,7 @@ include("./head.php");
                   	 	echo '<tr>
                     <td>'.$row['id'].'</td>
                     <td>'.$row['name'].'</td>
-                    <td><a href="./editserver.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./editserver.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                    <td><a href="./editserver.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./editserver.php?act=connect&id='.$row['id'].'" class="btn btn-info btn-xs btn-small">连接测试</a><a href="./editserver.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
                   </tr>';
                   	 }
                   	?>
