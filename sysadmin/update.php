@@ -26,6 +26,23 @@ $versions = $cloud->getSystemVersion();
   <h1 class="m-n font-thin h3">系统更新</h1>
 </div>
 <div class="wrapper-md" ng-controller="FormDemoCtrl">
+	
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading font-bold">注意事项</div>
+        <div class="panel-body">
+          <ol>
+          	<li>更新将会连接到云中心的服务器，更新包下载失败可能是云中心服务器遭到攻击，请耐性等候恢复!</li>
+          	<li>每个更新包名称后面都会附有最低版本信息，请确保达到该版本后在进行更新！</li>
+          	<li>在线更新功能不保证每次都成功，更新前请先备份数据以防意外！若发现更新失败导致系统崩溃，可以到Gitee或者Github进行下载！</li>
+          	<li>若不想有任何与云中心的连接可以直接到Gitee或者Github下载。</li>
+          </ol>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-default">
@@ -41,7 +58,7 @@ $versions = $cloud->getSystemVersion();
               <select name="version" class="form-control">
               	<?php
               	  foreach($versions['list'] as $k =>$v){
-              	  	echo '<option value="'.$v.'">'.$k.'</select>';
+              	  	echo '<option value="'.$v.'">'.$k.'</option>';
               	  }
               	?>
               </select>
