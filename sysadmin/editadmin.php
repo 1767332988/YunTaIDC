@@ -39,7 +39,7 @@ if($act == "edit"){
 		$password = md5(md5(daddslashes($_POST['password'])));
 		$DB->query("UPDATE `ytidc_admin` SET `password`='{$password}' WHERE `id`='{$id}'");
 	}
-	@header("Location: ./editadmin.php?id=<?=$id?>");
+	@header("Location: ./editadmin.php?id={$id}");
 	exit;
 }
 if($act == "del"){
@@ -68,7 +68,7 @@ include("./head.php");
       <div class="panel panel-default">
         <div class="panel-heading font-bold">编辑管理员</div>
         <div class="panel-body">
-          <form role="form" action="./addadmin.php" method="POST">
+          <form role="form" action="./editadmin.php?act=edit&id={$id}" method="POST">
             <div class="form-group">
               <label>管理员账户</label>
               <input type="text" name="username" class="form-control" placeholder="管理员账户" value="<?=$row['username']?>">
