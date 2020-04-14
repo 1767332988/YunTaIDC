@@ -39,9 +39,13 @@ if($act == "edit"){
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
       	if($k == "password"){
-      		$value = base64_encode($value);
+      		if(!empty($value)){
+	      		$value = md5(md5($value));
+	      		$DB->query("UPDATE `ytidc_user` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
+      		}
+      	}else{
+      		$DB->query("UPDATE `ytidc_user` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
       	}
-      	$DB->query("UPDATE `ytidc_user` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
     }
   	@header("Location: ./edituser.php?id={$id}");
   	exit;
@@ -79,12 +83,13 @@ $password = base64_decode($row['password']);
               <input name="email" type="text" class="form-control" placeholder="用户邮箱" value="<?=$row['email']?>">
             </div>
             <div class="form-group">
-              <label>用户密码</label>
-              <input name="password" type="password" class="form-control" placeholder="用户密码" value="<?=$password?>">
+              <label>用户密码（留空为不修改）</label>
+              <input name="password" type="password" class="form-control" placeholder="用户密码">
             </div>
             <div class="form-group">
               <label>用户价格组</label>
               <select name="grade" class="form-control">
+              	<option value="0">无价格组</option>
               	<?php while($row2 = $grade->fetch_assoc()){
               			if($row2['id'] == $row['grade']){
               				$selected = "selected";
