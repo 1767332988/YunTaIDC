@@ -68,7 +68,7 @@ include("./head.php");
       <div class="panel panel-default">
         <div class="panel-heading font-bold">编辑管理员</div>
         <div class="panel-body">
-          <form role="form" action="./editadmin.php?act=edit&id={$id}" method="POST">
+          <form role="form" action="./editadmin.php?act=edit&id=<?=$id?>" method="POST">
             <div class="form-group">
               <label>管理员账户</label>
               <input type="text" name="username" class="form-control" placeholder="管理员账户" value="<?=$row['username']?>">
@@ -619,6 +619,16 @@ include("./head.php");
 	            		}
 	            	?>
 	              <input type="checkbox" name="permission[]" value="main_template" <?=$checked?>><i></i> 编辑模板配置
+	            </label>
+	            <label class="checkbox-inline i-checks" style="margin-bottom: 5px;">
+	            	<?php
+	            		if(in_array('main_cron', $permission)){
+	            			$checked = 'checked';
+	            		}else{
+	            			$checked = '';
+	            		}
+	            	?>
+	              <input type="checkbox" name="permission[]" value="main_cron" <?=$checked?>><i></i> CRON设置配置
 	            </label>
 	            <label class="checkbox-inline i-checks" style="margin-bottom: 5px;">
 	            	<?php

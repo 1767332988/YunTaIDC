@@ -198,15 +198,34 @@ $postdata = array(
   	'product' => $product,
   	'server' => $server,
 );
-$function = $server['plugin']."_RenewService";
-$return = $function($postdata);
-if($return['status'] != "success"){
-	WriteLog(ROOT."/logs/service_error.log", "服务{$params['username']}续费失败，返回信息：{$return['msg']}");
-	@header("Location: ./msg.php?msg=服务器返回错误，请联系管理员处理！");
-  	exit;
+if($service['status'] == '暂停'){
+	$function = $server['plugin']."_UnsuspendService";
+	if(!function_exists($function)){
+		@header("Location: ./msg.php?msg=服务到期暂停后不支持恢复");
+		exit;
+	}else{
+		$return = $function($postdata);
+		if($return['status'] != "success"){
+			WriteLog(ROOT."/logs/service_error.log", "服务{$params['username']}续费失败，返回信息：{$return['msg']}");
+			@header("Location: ./msg.php?msg=服务器返回错误，请联系管理员处理！");
+		  	exit;
+		}else{
+		  	$DB->query("UPDATE `ytidc_service` SET `enddate`='{$return['enddate']}', `status`='激活' WHERE `id`='{$service['id']}'");
+		  	@header("Location: ./msg.php?msg=续费成功");
+		  	exit;
+		}
+	}
 }else{
-  	$DB->query("UPDATE `ytidc_service` SET `enddate`='{$return['enddate']}' WHERE `id`='{$service['id']}'");
-  	@header("Location: ./msg.php?msg=续费成功");
-  	exit;
+	$function = $server['plugin']."_RenewService";
+	$return = $function($postdata);
+	if($return['status'] != "success"){
+		WriteLog(ROOT."/logs/service_error.log", "服务{$params['username']}续费失败，返回信息：{$return['msg']}");
+		@header("Location: ./msg.php?msg=服务器返回错误，请联系管理员处理！");
+	  	exit;
+	}else{
+	  	$DB->query("UPDATE `ytidc_service` SET `enddate`='{$return['enddate']}' WHERE `id`='{$service['id']}'");
+	  	@header("Location: ./msg.php?msg=续费成功");
+	  	exit;
+	}
 }
 ?>

@@ -8,7 +8,6 @@
                         <div class="col-xs-12">
                             <div class="card">
                                 <div class="card-body">
-                                  登陆面板：[service_loginlink]<br>
                                   服务账号：[service[username]]<br>
                                   服务密码：[service[password]]<br>
                                   到期时间：[service[enddate]]<br>

@@ -125,6 +125,36 @@ if($type == "cloud"){
 </div>
 	<?php
 }
+if($type == "cron"){
+	?>
+	
+<div class="bg-light lter b-b wrapper-md">
+  <h1 class="m-n font-thin h3">CRON设置管理</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading font-bold">CRON设置</div>
+        <div class="panel-body">
+          <form role="form" action="./setting.php?type=cron&act=edit" method="POST">
+            <div class="form-group">
+              <label>距离（天）到期前发送续费提醒邮件</label>
+              <input type="number" name="cron_mail_alert" class="form-control" placeholder="距离（天）到期前发送续费提醒邮" value="<?=$conf['cron_mail_alert']?>">
+            </div>
+            <div class="form-group">
+              <label>到期后（天）删除服务</label>
+              <input type="number" name="cron_service_delete" class="form-control" placeholder="到期后（天）删除服务" value="<?=$conf['cron_service_delete']?>">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary">提交</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+	<?php
+}
 if($type == "smtp"){
 	?>
 	
@@ -167,10 +197,6 @@ if($type == "smtp"){
             	}
               ?>
               </select>
-            </div>
-            <div class="form-group">
-              <label>提前续费提醒（天）</label>
-              <input type="text" name="mail_alert" class="form-control" placeholder="续费提醒" value="<?=$conf['mail_alert']?>">
             </div>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>

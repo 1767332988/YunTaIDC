@@ -18,7 +18,7 @@ if(empty($id) || $DB->query("SELECT * FROM `ytidc_service` WHERE `id`='{$id}' AN
   	exit;
 }
 $row = $DB->query("SELECT * FROM `ytidc_service` WHERE `id`='{$id}' AND `userid`='{$user['id']}'")->fetch_assoc();
-if($row['status'] != '激活'){
+if($row['status'] != '激活' && $row['status'] != '暂停'){
 	@header("Location: ./msg.php?msg=服务器状态：".$row['status']."，请联系上级处理！");
 	exit();
 }

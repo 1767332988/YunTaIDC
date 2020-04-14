@@ -39,9 +39,12 @@ if(empty($_GET['id']) && empty($_SESSION['serviceid'])){
 		}
 	}
 }
+if($service['status'] != '激活'){
+	@header("Location: ./msg.php?msg=服务状态：{$service['status']}！暂时不能进行管理！");
+}
 $product = $DB->query("SELECT * FROM `ytidc_product` WHERE `id`='{$service['product']}'");
 if($product->num_rows != 1){
-	@header("Location: ./msg.php?msg={$service['product']}");
+	@header("Location: ./msg.php?msg=产品不存在");
 	exit;
 }else{
 	$product = $product->fetch_assoc();
