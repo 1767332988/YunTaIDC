@@ -21,7 +21,7 @@ if(file_exists(ROOT."install/index.php") || file_exists(ROOT."install/install.sq
 	exit('检测到您还没有删除安装的页面，可能会造成无法估计的损失，请前往install目录删除index.php以及install.sql');
 }
 if(file_exists(ROOT."install/update.php")){
-	@header("Location: ./install/update.php");
+	@header("Location: /install/update.php");
 	exit;
 }
 if(is_file(SYSTEM_ROOT.'360safe/360webscan.php')){//360网站卫士

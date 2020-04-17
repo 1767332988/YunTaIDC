@@ -14,7 +14,7 @@ if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
 if(daddslashes($_GET['act']) == 'add'){
 	if(in_array('*', $permission) || in_array('type_create', $permission)){
 		$name = "新建分类".rand(100, 999);
-  		$DB->query("INSERT INTO `ytidc_type` (`name`, `weight` ,`status`) VALUES ('{$name}', '0', '1')");
+  		$DB->query("INSERT INTO `ytidc_type` (`name`, `weight`,	father` ,`status`) VALUES ('{$name}', '0', '0', '1')");
 		@header("Location: ./type.php");
 		exit;
 	}else{

@@ -71,7 +71,7 @@ include("./head.php");
 		          		if($page != 0){
 		          			echo '<li><a href="./pay.php?page='.$page.'"><i class="fa fa-chevron-left"></i></a></li>';
 		          		}
-		          		$total = $DB->query("SELECT * FROM `ytidc_payplugin`");
+		          		$total = $DB->query("SELECT * FROM `ytidc_gateway`");
 		          		$records = $total->num_rows;
 		          		$total_pages = ceil($records / 10);
 		            	for($i = 1;$i <= $total_pages; $i++){
