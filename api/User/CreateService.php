@@ -19,7 +19,7 @@ if(empty($params['ytidc_user']) && empty($params['ytidc_pass'])){
     }
 }else{
   	$ytuser = daddslashes($params['ytidc_user']);
-  	$ytpass = base64_encode(daddslashes($params['ytidc_pass']));
+  	$ytpass = md5(md5(daddslashes($params['ytidc_pass'])));
   	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$ytuser}' AND `password`='{$ytpass}'");
   	if($user->num_rows != 1){
       	$retdata = array(
@@ -99,7 +99,7 @@ if($user['grade'] != "0" && $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='
 	$discount = 100;
 }
 $price = json_decode($grade['price'], true);
-$pdis = json_decode(url_decode($product['time']),true);
+$pdis = json_decode(url_decode($product['period']),true);
 foreach($pdis as $k => $v){
 	if($v['name'] == $params['time']){
 		$dis = array(
@@ -113,7 +113,7 @@ foreach($pdis as $k => $v){
 if(empty($dis)){
   	$retdata = array(
       	'ret' => 'fail',
-      	'msg' => '周期设置错误，联系上级处理',
+      	'msg' => '周期不存在，联系上级处理',
     );
   	 exit(json_encode($retdata));
 }

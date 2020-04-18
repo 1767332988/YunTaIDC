@@ -18,7 +18,7 @@ if(empty($params['ytidc_user']) && empty($params['ytidc_pass'])){
     }
 }else{
   	$ytuser = daddslashes($params['ytidc_user']);
-  	$ytpass = base64_encode(daddslashes($params['ytidc_pass']));
+  	$ytpass = md5(md5(daddslashes($params['ytidc_pass'])));
   	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$ytuser}' AND `password`='{$ytpass}'");
   	if($user->num_rows != 1){
       	$retdata = array(
