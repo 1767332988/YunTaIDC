@@ -65,7 +65,7 @@ if($product['status'] != 1){
 }
 
 if($product['limit'] != 0){
-	$userservice = $DB->qiery("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
+	$userservice = $DB->query("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
 	if($userservice >= $product['limit']){
 		$retdata = array(
 			'ret' => 'fail',
