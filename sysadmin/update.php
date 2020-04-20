@@ -54,6 +54,10 @@ $versions = $cloud->getSystemVersion();
               <input type="text" name="newest" class="form-control" placeholder="最新版本" value="<?=$versions['newest']?>" disabled>
             </div>
             <div class="form-group">
+              <label>当前版本</label>
+              <input type="text" name="now" class="form-control" placeholder="当前版本" value="2.4.05" disabled>
+            </div>
+            <div class="form-group">
               <label>选择版本</label>
               <select name="version" class="form-control">
               	<?php

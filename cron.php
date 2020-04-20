@@ -2,6 +2,9 @@
 
 include("./includes/common.php");
 require_once("./includes/mail.class.php");
+if($conf['cron_order_delete'] == 1){
+	$DB->query("DELETE FROM `ytidc_order` WHERE `status`='待支付'");
+}
 $date = date('Y-m-d', strtotime("-{$conf['cron_service_delete']} days", time()));
 //清除到期服务
 $result = $DB->query("SELECT * FROM `ytidc_service` WHERE `enddate`='{$date}'");

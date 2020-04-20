@@ -80,6 +80,12 @@ if($type == "config"){
               <label>分站价格</label>
               <input name="siteprice" type="text" class="form-control" id="serverdns2" placeholder="分站价格" value="<?=$conf['siteprice']?>" oninput="value=value.replace(/[^\d.]/g,'')">
             </div>
+            <div class="form-group">
+              <label>开通服务随机用户名</label>
+              <select class="form-control" name="random_username">
+              	<?php if($conf['random_username'] == 1){echo '<option value="1" selected>开启</option><option value="0">关闭</option>';}else{echo '<option value="1">开启</option><option value="0" selected>关闭</option>';}?>
+              </select>
+            </div>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>
         </div>
@@ -138,6 +144,12 @@ if($type == "cron"){
         <div class="panel-heading font-bold">CRON设置</div>
         <div class="panel-body">
           <form role="form" action="./setting.php?type=cron&act=edit" method="POST">
+            <div class="form-group">
+              <label>删除待支付订单</label>
+              <select class="form-control" name="cron_order_delete">
+              	<?php if($conf['cron_order_delete'] == 1){echo '<option value="1" selected>开启</option><option value="0">关闭</option>';}else{echo '<option value="1">开启</option><option value="0" selected>关闭</option>';}?>
+              </select>
+            </div>
             <div class="form-group">
               <label>距离（天）到期前发送续费提醒邮件</label>
               <input type="number" name="cron_mail_alert" class="form-control" placeholder="距离（天）到期前发送续费提醒邮" value="<?=$conf['cron_mail_alert']?>">

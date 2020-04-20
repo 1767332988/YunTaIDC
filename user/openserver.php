@@ -17,9 +17,16 @@ if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
 foreach($_POST as $k => $v){
   	$params[$k] = daddslashes($v);
 }
-if(empty($params['username']) || empty($params['password']) || empty($params['product']) || empty($params['time'])){
+if(empty($params['password']) || empty($params['product']) || empty($params['time'])){
   	@header("Location: ./msg.php?msg=参数不足够，请勿为空！");
-  	exit;
+}
+if($conf['random_username'] != 1){
+	if(empty($params['username'])){
+		@header("Location: ./msg.php?msg=请输入服务账号");
+		exit;
+	}
+}else{
+	$params['username'] = randomkeys(8);
 }
 if($DB->query("SELECT * FROM `ytidc_service` WHERE `username`='{$params['username']}'")->num_rows != 0){
   	@header("Location: ./msg.php?msg=服务器用户名已被占用");
@@ -44,7 +51,7 @@ if($server->num_rows != 1){
 	$server = $server->fetch_assoc();
 }
 if($product['limit'] != 0){
-	$userservice = $DB->qiery("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
+	$userservice = $DB->query("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
 	if($userservice >= $product['limit']){
 		@header("Location: ./msg.php?msg=购买数量已达上限！");
 		exit;
@@ -236,7 +243,6 @@ if($return['status'] != "success"){
 }else{
 	$new_password = base64_encode($return['password']);
 	$DB->query("UPDATE `ytidc_service` SET `username`='{$return['username']}',`password`='{$new_password}',`enddate`='{$return['enddate']}',`configoption`='{$return['configoption']}',`status`='激活' WHERE `id`='{$serviceid}'");
-	$dberror = $DB->error;
   	@header("Location: ./msg.php?msg=开通成功");
   	exit;
 }

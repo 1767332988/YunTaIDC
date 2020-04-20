@@ -1,5 +1,5 @@
 <?php
-//2.4.02更新版本
+//2.4.05更新版本
 require_once("../config.php");
 $DB = new Mysqli($dbconfig['host'], $dbconfig['user'], $dbconfig['pass'], $dbconfig['name'], $dbconfig['port']);
 $sqlfile = file_get_contents("./update.sql");
@@ -20,6 +20,9 @@ for($i=0;$i<count($sqlquery);$i++) {
 }
 unlink('./update.sql');
 unlink('./update.php');
+?>
+<meta charset="utf-8">
+<?php
 exit('更新数据库成功！若没有失败可以直接返回！<a href="/">点击返回首页</a><br>成功数量：'.$t.'<br>失败数量：'.$e.'<br>失败信息：'.$error);
 
 ?>

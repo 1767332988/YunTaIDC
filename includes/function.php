@@ -131,7 +131,7 @@ function ismobile() {
 function WriteLog($logfile, $content){
 	$time = date('Y-m-d H:i:s');
 	$content = "【{$time}】：{$content}\r\n";
-	if(file_put_contents($content, $logfile, FILE_APPEND)){
+	if(file_put_contents($logfile, $content, FILE_APPEND)){
 		return true;
 	}else{
 		return false;
@@ -166,5 +166,15 @@ function getRealIp() {
 	}
 	return ($ip ? $ip : $_SERVER['REMOTE_ADDR']);
 }
+
+function randomkeys($length)   {   
+    $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';  
+    $key = "";
+    for($i=0;$i<$length;$i++)   
+    {   
+        $key = $key . $pattern[mt_rand(0,61)];    //生成php随机数   
+    }   
+    return $key;   
+}   
 
 ?>

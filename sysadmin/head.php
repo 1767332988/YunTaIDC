@@ -217,6 +217,10 @@
                       <span>云中心管理</span>
                     </a>
                   </li><li ui-sref-active="active">
+                    <a ui-sref="layout.app" href="/sysadmin/setting.php?type=cron">
+                      <span>CRON设置</span>
+                    </a>
+                  </li><li ui-sref-active="active">
                     <a ui-sref="layout.app" href="/sysadmin/update.php">
                       <span>系统更新</span>
                     </a>

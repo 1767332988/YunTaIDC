@@ -38,7 +38,13 @@ foreach($pdis as $k => $v){
 	);
 	$time_template_new = $time_template_new . template_code_replace($time_template[1][0], $time_template_code);
 }
-$template = str_replace($time_template[1][0], $time_template_new, $template);
+$template = str_replace($time_template[0][0], $time_template_new, $template);
+$username_template = find_list_html("服务账号输入", $template);
+if($conf['random_username'] == 1){
+	$template = str_replace($username_template[0][0], "", $template);
+}else{
+	$template = str_replace($username_template[0][0], $username_template[1][0], $template);
+}
 $template_code = array(
 	'site' => $site,
 	'config' => $conf,
