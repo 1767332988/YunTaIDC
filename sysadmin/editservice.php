@@ -18,6 +18,52 @@ if(empty($id)){
   	exit;
 }
 $act = daddslashes($_GET['act']);
+if($act == "reopen"){
+	if(!in_array('*', $permission) && !in_array('service_reopen', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
+	$service = $DB->query("SELECT * FROM `ytidc_service` WHERE `id`='{$id}'");
+	if($service->num_rows != 1){
+		@header("Location: ./msg.php?msg=服务不存在");
+		exit;
+	}else{
+		$service = $service->fetch_assoc();
+	}
+	if($service['status'] != '等待审核'){
+		@header("Location: ./msg.php?msg=该服务非等待审核状态");
+		exit;
+	}
+	$product = $DB->query("SELECT * FROM `ytidc_product` WHERE `id`='{$service['product']}'")->fetch_assoc();
+	$server = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$product['server']}'")->fetch_assoc();
+	if(!file_exists(ROOT.'plugins/server/'.$server['plugin'].'/main.php')){
+		@header("Location: ./msg.php?msg=服务器插件不存在");
+		exit;
+	}else{
+		include_once(ROOT.'plugins/server/'.$server['plugin'].'/main.php');
+		$postdata = array(
+			'server' => $server,
+			'product' => $product,
+			'service' => array(
+				'username' => $service['username'],
+				'password' => base64_decode($service['password']),
+				'time' => json_decode(url_decode($service['period']), true),
+			),
+		);
+		$function = $server['plugin']."_CreateService";
+		$return = $function($postdata);
+		if($return['status'] != "success"){
+			WriteLog(ROOT."/logs/service_error.log", "服务{$params['username']}开通失败，返回信息：{$return['msg']}");
+		  	@header("Location: ./msg.php?msg=服务器返回错误：{$return['msg']}");
+		  	exit;
+		}else{
+			$new_password = base64_encode($return['password']);
+			$DB->query("UPDATE `ytidc_service` SET `username`='{$return['username']}',`password`='{$new_password}',`enddate`='{$return['enddate']}',`configoption`='{$return['configoption']}',`status`='激活' WHERE `id`='{$id}'");
+		  	@header("Location: ./msg.php?msg=开通成功");
+		  	exit;
+		}
+	}
+}
 if($act == "del"){
 	if(!in_array('*', $permission) && !in_array('service_delete', $permission)){
 		@header("Location: ./msg.php?msg=你无权限进行此操作！");

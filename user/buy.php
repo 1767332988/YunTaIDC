@@ -3,9 +3,11 @@
 include("../includes/common.php");
 if(!empty($_GET['type'])){
   	$type = daddslashes($_GET['type']);
+  	$typecontent = $DB->query("SELECT * FROM `ytidc_type` WHERE `id`='{$type}'")->fetch_assoc();
   	$product = $DB->query("SELECT * FROM `ytidc_product` WHERE `type`='{$type}' AND `hidden`='0' ORDER BY `weight` DESC");
 }else{
   	$type = $DB->query("SELECT * FROM `ytidc_type` ORDER BY `weight` DESC")->fetch_assoc();
+  	$typecontent = $type;
   	$product = $DB->query("SELECT * FROM `ytidc_product` WHERE `type`='{$type['id']}' AND `hidden`='0' ORDER BY `weight` DESC");
 }
 $template = file_get_contents("../templates/".$template_name."/user_buy.template");
@@ -46,6 +48,7 @@ $template = str_replace($product_template[0][0], $product_template_new, $templat
 $template_code = array(
 	'site' => $site,
 	'config' => $conf,
+	'type' => $typecontent,
 	'template_file_path' => '../templates/'.$template_name,
 	'user' => $user,
 );

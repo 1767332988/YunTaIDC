@@ -54,9 +54,14 @@ include("./head.php");
                     <td>'.$row['username'].'</td>
                     <td>'.$product[$row['product']].'</td>
                     <td>'.$row['enddate'].'</td>
-                    <td>'.$row['status'].'</td>
-                    <td><a href="./editservice.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./editservice.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                    <td>'.$row['status'].'</td>';
+                    if($row['status'] == '等待审核'){
+                    	echo '<td><a href="./editservice.php?id='.$row['id'].'&act=reopen" class="btn btn-success btn-xs btn-small">开通</a><a href="./editservice.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./editservice.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
                   </tr>';
+                    }else{
+                    	echo '<td><a href="./editservice.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./editservice.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                  </tr>';
+                    }
                   	 }
                   	?>
                 </tbody>

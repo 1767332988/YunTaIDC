@@ -38,6 +38,7 @@ include("./head.php");
                 <thead>
                   <tr>
                     <th>订单编号</th>
+                    <th>用户UID</th>
                     <th>内容</th>
                     <th>金额</th>
                     <th>操作</th>
@@ -49,6 +50,7 @@ include("./head.php");
                   	 while($row = $result->fetch_assoc()){
                   	 	echo '<tr>
                     <td>'.$row['orderid'].'</td>
+                    <td>'.$row['user'].'</td>
                     <td>'.$row['description'].'</td>
                     <td>'.$row['money'].'</td>
                     <td>'.$row['action'].'</td>

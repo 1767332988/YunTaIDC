@@ -1,13 +1,13 @@
 # YunTaIDC
 云塔IDC系统【中文】【Chinese】  
-![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.0.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.4.0/cyan)![Status](https://badgen.net/badge/Status/Good/green)  
+![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.0.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.4.10/cyan)![Status](https://badgen.net/badge/Status/Good/green)  
 作者QQ：2119566807  
 作者TG：@kitrosmc  
 交流QQ群：954152892  
 ![logo.png](https://s2.ax1x.com/2020/03/04/3o6PHS.png)
 ## 安装使用
 ### 环境要求：
-- PHP版本 >= 7.0
+- PHP版本 = 7.3
 ### 安装步骤：
 1. 上传源码到根目录并绑定域名
 2. 浏览域名/install，例如：`http://www.example.com/install/`
@@ -31,6 +31,10 @@
 - 新增限制购买功能
 - 新增注册登陆验证码功能
 - 新增在线更新功能
+- 新增订单重新开通功能
+- 新增订单暂停状态
+- 新增工单回复邮件
+- 新增分类介绍功能
 - 更新服务器插件系统架构
 - 更新用户密码加密方法
 - 更新用户登陆验证方法

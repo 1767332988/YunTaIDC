@@ -215,7 +215,8 @@ if($new_money >= 0){
 $date = date('Y-m-d',strtotime("+{$dis[day]} days", time()));
 $service_password = base64_encode($params['password']);
 $buydate = date("Y-m-d");
-$DB->query("INSERT INTO `ytidc_service` (`userid`, `username`, `password`, `buydate`, `enddate`, `product`, `promo_code`, `configoption`, `status`) VALUES ('{$user['id']}', '{$params['username']}', '{$service_password}', '{$buydate}', '{$date}', '{$product['id']}', '{$params['promo_code']}', '' ,'等待审核')");
+$speriod = json_encode(url_encode($dis));
+$DB->query("INSERT INTO `ytidc_service` (`userid`, `username`, `password`, `buydate`, `enddate`, `period`, `product`, `promo_code`, `configoption`, `status`) VALUES ('{$user['id']}', '{$params['username']}', '{$service_password}', '{$buydate}', '{$date}', '{$speriod}', '{$product['id']}', '{$params['promo_code']}', '' ,'等待审核')");
 $serviceid = $DB->query("SELECT * FROM `ytidc_service` WHERE `username`='{$params['username']}' AND `password`='{$service_password}'")->fetch_assoc();
 $serviceid = $serviceid['id'];
 $plugin = "../plugins/server/".$server['plugin']."/main.php";

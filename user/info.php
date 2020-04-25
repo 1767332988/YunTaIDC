@@ -12,8 +12,12 @@ if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
 		exit;
 	}
 }
-if(!empty($_POST['password']) && !empty($_POST['email'])){
-	$password = base64_encode(daddslashes($_POST['password']));
+if(!empty($_POST['email'])){
+	if(!empty($_POST['password'])){
+		$password = md5(md5(daddslashes($_POST['password'])));
+	}else{
+		$password = $user['password'];
+	}
 	$email = daddslashes($_POST['email']);
     $DB->query("UPDATE `ytidc_user` SET `password`='{$password}', `email`='{$email}' WHERE `username`='{$user['username']}'");
     @header("Location: ./msg.php?msg=修改成功");

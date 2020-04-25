@@ -32,6 +32,11 @@ if($act == "edit"){
   	$time = date('Y-m-d H:i:s');
   	$DB->query("INSERT INTO `ytidc_wreply`(`person`, `content`, `worder`, `time`) VALUES ('{$_SESSION['admin']}','{$reply}','{$id}','{$time}')");
   	$DB->query("UPDATE `ytidc_worder` SET `status`='已回复' WHERE `id`='{$id}'");
+  	require_once(ROOT.'includes/mail.class.php');
+  	$mail = new SendMail();
+  	$worder = $DB->query("SELECT * FROM `ytidc_worder` WHERE `id`='{$id}'")->fetch_assoc();
+  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$worder['user']}'")->fetch_assoc();
+  	$mail->WorderReplyMail($user, $worder, $conf, $site);
   	@header("Location: ./worder.php");
   	exit;
 }

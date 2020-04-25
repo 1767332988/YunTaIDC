@@ -142,6 +142,16 @@ include("./head.php");
 	            </label>
 	            <label class="checkbox-inline i-checks" style="margin-bottom: 5px;">
 	            	<?php
+	            		if(in_array('service_reopen', $permission)){
+	            			$checked = 'checked';
+	            		}else{
+	            			$checked = '';
+	            		}
+	            	?>
+	              <input type="checkbox" name="permission[]" value="service_reopen" <?=$checked?>><i></i> 开通待审核服务
+	            </label>
+	            <label class="checkbox-inline i-checks" style="margin-bottom: 5px;">
+	            	<?php
 	            		if(in_array('service_delete', $permission)){
 	            			$checked = 'checked';
 	            		}else{

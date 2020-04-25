@@ -37,8 +37,17 @@ class SendMail{
 		$subject = "[云塔IDC系统]产品续费提醒";
 		$mailto = $user['email'];
 		$content = "亲爱的客户您好：<br /><br />
-		您在{$site['title']}购买的服务即将到期，服务账号为：{$service['username']}，请尽快前往续费避免数据丢失，再次感谢您选择了我没<br /><br />{$site['title']}<br />{$site['domain']}";
+		您在{$site['title']}购买的服务即将到期，服务账号为：{$service['username']}，请尽快前往续费避免数据丢失，再次感谢您选择了我们<br /><br />{$site['title']}<br />{$site['domain']}";
 		$this->SendEMail($mailto, $subject, $content, $conf);
+	}
+	
+	public function WorderReplyMail($user, $worder, $conf, $site){
+		$subject = "[云塔IDC系统]工单回复提醒";
+		$mailto = $user['email'];
+		$content = "亲爱的客户您好：<br /><br />
+		您在{$site['title']}提交的工单已经被回复，服务账号为：{$worder['title']}，请尽快前往查看回复，再次感谢您选择了我们<br /><br />{$site['title']}<br />{$site['domain']}";
+		$this->SendEMail($mailto, $subject, $content, $conf);
+		
 	}
 	
 }

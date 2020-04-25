@@ -37,7 +37,7 @@ if(!empty($id)){
 		@header("Location: ./msg.php?msg=升级成功");
 		exit;
 	}
-	if($user['money'] >= $grade['need_save']&& $grade['need_paid'] != 0){
+	if($user['money'] >= $grade['need_save']&& $grade['need_save'] != 0){
 		$DB->query("UPDATE `ytidc_user` SET `grade`='{$grade['id']}' WHERE `id`='{$user['id']}'");
 		@header("Location: ./msg.php?msg=升级成功");
 		exit;	

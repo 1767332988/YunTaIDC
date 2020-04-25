@@ -138,7 +138,7 @@ $_SESSION['checksession']=1;
 							<tr>
 								<td>PHP版本</td>
 								<td><?php echo PHP_VERSION; ?></td>
-								<td>7.2</td>
+								<td>7.3</td>
 							</tr>
 							<tr>
 								<td>file_get_contents()功能</td>

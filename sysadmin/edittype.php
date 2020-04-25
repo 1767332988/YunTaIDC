@@ -59,6 +59,10 @@ $type = $DB->query("SELECT * FROM `ytidc_type` WHERE `father`='0'");
               <input type="text" name="name" class="form-control" placeholder="分类名称" value="<?=$row['name']?>">
             </div>
             <div class="form-group">
+              <label>分类介绍：</label>
+              <textarea class="form-control" name="description"><?=$row['description']?></textarea>
+            </div>
+            <div class="form-group">
               <label>分类权重（越大越前）</label>
               <input type="number" name="weight" class="form-control" placeholder="分类权重" value="<?=$row['weight']?>">
             </div>

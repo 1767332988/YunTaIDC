@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `ytidc_admin` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 INSERT INTO `ytidc_admin` (`id`, `username`, `password`, `permission`, `lastip`, `status`) VALUES
-(1, 'admin', '14e1b600b1fd579f47433b88e8d85291', '["*"]', '222.130.128.189', 1);
+(1, 'admin', '14e1b600b1fd579f47433b88e8d85291', '["*"]', '2001:f90:4880:fda:c85a:8130:94a5:35e5', 1);
 
 CREATE TABLE IF NOT EXISTS `ytidc_config` (
   `k` varchar(256) NOT NULL,
@@ -31,18 +31,24 @@ INSERT INTO `ytidc_config` (`k`, `v`) VALUES
 ('contactemail', '123456@qq.com'),
 ('template_mobile', 'default'),
 ('cryptkey', '123123'),
-('crondate', '2020-04-11'),
+('crondate', '2020-04-20'),
 ('cloud_get_news', '1'),
 ('cloud_pay_vertify', '1'),
 ('mainsite_title', '云塔IDC系统'),
 ('mainsite_subtitle', '光荣使用云塔2.4版本'),
 ('mainsite_description', '光荣使用云塔2.4版本'),
 ('mainsite_keywords', ''),
-('smtp_host', 'smtp.qq.com'),
+('smtp_host', ''),
 ('smtp_user', ''),
 ('smtp_pass', ''),
-('smtp_port', '25'),
-('smtp_secure', '0');
+('smtp_port', ''),
+('smtp_secure', '0'),
+('cron_mail_alert', '7'),
+('cron_service_delete', '7'),
+('cron_mail_alert', '7'),
+('cron_service_delete', '7'),
+('cron_order_delete', '1'),
+('random_username', '0');
 
 CREATE TABLE IF NOT EXISTS `ytidc_gateway` (
   `id` int(11) NOT NULL,
@@ -106,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `ytidc_promo` (
   `renew` int(11) NOT NULL,
   `daili` int(11) NOT NULL,
   `status` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `ytidc_server` (
   `id` int(11) NOT NULL,
@@ -131,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `ytidc_service` (
   `password` varchar(256) NOT NULL,
   `buydate` date NOT NULL,
   `enddate` date NOT NULL,
+  `period` text NOT NULL,
   `product` int(11) NOT NULL,
   `promo_code` varchar(256) NOT NULL,
   `configoption` text NOT NULL,
@@ -153,6 +160,7 @@ CREATE TABLE IF NOT EXISTS `ytidc_subsite` (
 CREATE TABLE IF NOT EXISTS `ytidc_type` (
   `id` int(11) NOT NULL,
   `name` varchar(256) NOT NULL,
+  `description` text NOT NULL,
   `father` int(11) NOT NULL,
   `weight` int(11) NOT NULL,
   `status` int(11) NOT NULL
@@ -229,7 +237,7 @@ ALTER TABLE `ytidc_wreply`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `ytidc_admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 ALTER TABLE `ytidc_gateway`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 ALTER TABLE `ytidc_grade`
@@ -239,7 +247,7 @@ ALTER TABLE `ytidc_notice`
 ALTER TABLE `ytidc_product`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 ALTER TABLE `ytidc_promo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ytidc_server`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 ALTER TABLE `ytidc_service`
