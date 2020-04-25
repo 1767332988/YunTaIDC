@@ -1,15 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
 }
 $user = $DB->query("SELECT * FROM `ytidc_user`")->num_rows;
 $service = $DB->query("SELECT * FROM `ytidc_service`");
 $service_number = $service->num_rows;
-$site = $DB->query("SELECT * FROM `ytidc_fenzhan`")->num_rows;
+$site = $DB->query("SELECT * FROM `ytidc_subsite`")->num_rows;
 $worder = $DB->query("SELECT * FROM `ytidc_worder` WHERE `status`='待回复'")->num_rows;
 $title = "管理后台";
 if($conf['crondate'] == date('Y-m-d')){
@@ -31,7 +32,7 @@ include("./head.php");
       <div class="row">
         <div class="col-sm-6 col-xs-12">
           <h1 class="m-n font-thin h3 text-black">仪表盘</h1>
-          <small class="text-muted">欢迎使用云塔v2.3</small>
+          <small class="text-muted">欢迎使用云塔v2.4</small>
         </div>
       </div>
     </div>
@@ -81,7 +82,7 @@ include("./head.php");
               <div class="r bg-light dker item hbox no-border">
                 <div class="col dk padder-v r-r">
                   <div class="text-primary-dk font-thin h1"><span><?=$cronstatus?></span></div>
-                  <span class="text-muted text-xs">Cron工作</span>
+                  <span class="text-muted text-xs">Cron工作[监控地址：http://<?=$_SERVER['HTTP_HOST']?>/cron.php]</span>
                 </div>
               </div>
             </div>
@@ -112,8 +113,8 @@ include("./head.php");
             	<?php
             	
             	if($conf['cloud_get_news'] == 1){
-            		$news = file_get_contents("http://yzx.mobi/news.json");
-            		$news = json_decode($news, true);
+            		$cloud = new Cloud;
+            		$news = $cloud->getSystemNews();
             		foreach($news as $t => $url){
             			echo '
               <li class="list-group-item">

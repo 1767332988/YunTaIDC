@@ -1,27 +1,23 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}
 }
-if(!empty($_POST['password']) && !empty($_POST['email'])){
-	$password = base64_encode(daddslashes($_POST['password']));
+if(!empty($_POST['email'])){
+	if(!empty($_POST['password'])){
+		$password = md5(md5(daddslashes($_POST['password'])));
+	}else{
+		$password = $user['password'];
+	}
 	$email = daddslashes($_POST['email']);
     $DB->query("UPDATE `ytidc_user` SET `password`='{$password}', `email`='{$email}' WHERE `username`='{$user['username']}'");
     @header("Location: ./msg.php?msg=修改成功");

@@ -2,32 +2,31 @@
 
 include("../includes/common.php");
 set_time_limit(3600);
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}
 }
 
 foreach($_POST as $k => $v){
   	$params[$k] = daddslashes($v);
 }
-if(empty($params['username']) || empty($params['password']) || empty($params['product']) || empty($params['time'])){
+if(empty($params['password']) || empty($params['product']) || empty($params['time'])){
   	@header("Location: ./msg.php?msg=参数不足够，请勿为空！");
-  	exit;
+}
+if($conf['random_username'] != 1){
+	if(empty($params['username'])){
+		@header("Location: ./msg.php?msg=请输入服务账号");
+		exit;
+	}
+}else{
+	$params['username'] = randomkeys(8);
 }
 if($DB->query("SELECT * FROM `ytidc_service` WHERE `username`='{$params['username']}'")->num_rows != 0){
   	@header("Location: ./msg.php?msg=服务器用户名已被占用");
@@ -51,19 +50,32 @@ if($server->num_rows != 1){
 }else{
 	$server = $server->fetch_assoc();
 }
-
-if($user['grade'] == "0" || $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->num_rows != 1){
-  	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `default`='1'")->fetch_assoc();
-}else{
-  	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->fetch_assoc();
+if($product['limit'] != 0){
+	$userservice = $DB->query("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'")->num_rows;
+	if($userservice >= $product['limit']){
+		@header("Location: ./msg.php?msg=购买数量已达上限！");
+		exit;
+	}
 }
-$price = json_decode($grade['price'], true);
-$pdis = json_decode(url_decode($product['time']),true);
+if($user['grade'] != "0" && $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->num_rows == 1){
+  	$grade = $DB->query("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'")->fetch_assoc();
+	$price = json_decode($grade['price'], true);
+	$discount = $price[$product['id']];
+	if(empty($discount)){
+		$discount = $price['*'];
+		if(empty($discount)){
+			$discount = 100;
+		}
+	}
+}else{
+	$discount = 100;
+}
+$pdis = json_decode(url_decode($product['period']),true);
 foreach($pdis as $k => $v){
 	if($v['name'] == $params['time']){
 		$dis = array(
 			'name' => $v['name'],
-			'discount' => $v['discount'],
+			'price' => $v['price'],
 			'day' => $v['day'],
 			'remark' => $v['remark'],
 		);
@@ -74,9 +86,9 @@ if(empty($dis)){
   	exit;
 }
 if(empty($params['promo_code'])){
-	$price = $price[$product['id']] * $dis['discount'];
+	$price = $dis['price'] * $discount / 100;
 }else{
-	$price = $price[$product['id']] * $dis['discount'];
+	$price = $dis['price'] * $discount / 100;
 	$promo = $DB->query("SELECT * FROM `ytidc_promo` WHERE `code`='{$params['promo_code']}'");
 	if($promo->num_rows != 1){
 	  	@header("Location: ./msg.php?msg=优惠码不存在！");
@@ -103,7 +115,7 @@ if(!check_price($price, true)){
   	exit;
 }
 if($user['site'] != 0){
-	$usersite = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `id`='{$user['site']}'");
+	$usersite = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `id`='{$user['site']}'");
 	if($usersite->num_rows != 1){
 		$usersite = $site;
 	}else{
@@ -125,13 +137,20 @@ if($user['site'] != 0){
 			}
 			if($usersiteownergrade['weight'] >= $grade['weight']){
 				$usersiteownerprice = json_decode($usersiteownergrade['price'] ,true);
+				$usersiteownerprice2 = $usersiteownerprice[$product['id']];
+				if(empty($usersiteownerprice2)){
+					$usersiteownerprice2 = $usersiteownerprice['*'];
+					if(empty($usersiteownerprice2)){
+						$usersiteownerprice2 = 100;
+					}
+				}
 				//总共奖励金额计算：用户价格组价格 - 分站价格组价格
-				$usersiteownerprice = $usersiteownerprice[$product['id']] * $dis['discount'];
+				$usersiteownerprice = $usersiteownerprice2 * $dis['price'] / 100;
 				$usersitemoneyprice = $price -  $usersiteownerprice;
 				//必须要大于1块钱才会进行邀请返现，防止出现过小金额
 				if($usersitemoneyprice >= 1){
 					//若有邀请者，检查邀请者是否存在，分站后台设置邀请返现是否合理，防止刷余额情况
-					if(!empty($user['invite']) && $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->num_rows == 1 && $usersite['invitepercent'] < 100){
+					if(!empty($user['invite']) && $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->num_rows == 1 && $usersite['invitepercent'] < 100 && $user['invite'] != $site['user']){
 						//邀请奖励
 						$invite = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$user['invite']}'")->fetch_assoc();
 						//邀请者奖励金额计算：总共奖励金额 * 分站设置邀请返现比例
@@ -164,7 +183,14 @@ if($user['site'] != 0){
 		//邀请者奖励金额计算：(订单金额 - 最高等级价格) * 分站设置邀请返现比例
 		$highgrade = $DB->query("SELECT * FROM `ytidc_grade` ORDER BY `weight` DESC")->fetch_assoc();
 		$highgradeprice = json_decode($highgrade['price'], true);
-		$highgradeprice =  $highgradeprice[$product['id']] * $dis['discount'];
+		$highgradeprice2 = $highgradeprice[$product['id']];
+		if(empty($highgradeprice2)){
+			$highgradeprice2 = $highgradeprice['*'];
+			if(empty($highgradeprice2)){
+				$highgradeprice2 = 100;
+			}
+		}
+		$highgradeprice =  $highgradeprice2 * $dis['price'] / 100;
 		$inviteprice = $price - $highgradeprice;
 		$giftmoney = $inviteprice * $conf['invitepercent'] / 100;
 		//再次检查返现是否超出总计奖励金额
@@ -189,7 +215,8 @@ if($new_money >= 0){
 $date = date('Y-m-d',strtotime("+{$dis[day]} days", time()));
 $service_password = base64_encode($params['password']);
 $buydate = date("Y-m-d");
-$DB->query("INSERT INTO `ytidc_service` (`userid`, `username`, `password`, `buydate`, `enddate`, `product`, `promo_code`, `configoption`, `status`) VALUES ('{$user['id']}', '{$params['username']}', '{$service_password}', '{$buydate}', '{$date}', '{$product['id']}', '{$params['promo_code']}', '' ,'等待审核')");
+$speriod = json_encode(url_encode($dis));
+$DB->query("INSERT INTO `ytidc_service` (`userid`, `username`, `password`, `buydate`, `enddate`, `period`, `product`, `promo_code`, `configoption`, `status`) VALUES ('{$user['id']}', '{$params['username']}', '{$service_password}', '{$buydate}', '{$date}', '{$speriod}', '{$product['id']}', '{$params['promo_code']}', '' ,'等待审核')");
 $serviceid = $DB->query("SELECT * FROM `ytidc_service` WHERE `username`='{$params['username']}' AND `password`='{$service_password}'")->fetch_assoc();
 $serviceid = $serviceid['id'];
 $plugin = "../plugins/server/".$server['plugin']."/main.php";
@@ -211,12 +238,12 @@ $function = $server['plugin']."_CreateService";
 $return = $function($postdata);
 
 if($return['status'] != "success"){
-  	@header("Location: ./msg.php?msg={$return['msg']}");
+	WriteLog(ROOT."/logs/service_error.log", "服务{$params['username']}开通失败，返回信息：{$return['msg']}");
+  	@header("Location: ./msg.php?msg=服务器返回错误，联系管理员处理");
   	exit;
 }else{
 	$new_password = base64_encode($return['password']);
 	$DB->query("UPDATE `ytidc_service` SET `username`='{$return['username']}',`password`='{$new_password}',`enddate`='{$return['enddate']}',`configoption`='{$return['configoption']}',`status`='激活' WHERE `id`='{$serviceid}'");
-	$dberror = $DB->error;
   	@header("Location: ./msg.php?msg=开通成功");
   	exit;
 }

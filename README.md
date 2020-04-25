@@ -1,59 +1,45 @@
 # YunTaIDC
 云塔IDC系统【中文】【Chinese】  
-![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.0.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.3/cyan)![Status](https://badgen.net/badge/状态/正常/green)  
+![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.0.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.4.10/cyan)![Status](https://badgen.net/badge/Status/Good/green)  
 作者QQ：2119566807  
 作者TG：@kitrosmc  
 交流QQ群：954152892  
 ![logo.png](https://s2.ax1x.com/2020/03/04/3o6PHS.png)
 ## 安装使用
 ### 环境要求：
-- .htaccess 支持
-- PHP版本 >= 7.0
+- PHP版本 = 7.3
 ### 安装步骤：
 1. 上传源码到根目录并绑定域名
 2. 浏览域名/install，例如：`http://www.example.com/install/`
 3. 填写相关数据库信息点击完成安装
-4. 删除安装包
-5. 安装完成
+4. 安装完成
 ### 更新系统：
 1. 下载更新包并且上传至网站根目录
-2. 解压压缩包并且导入SQL文件
-3. 访问域名/install/update.php，例如：`http://www.example.com/install/update.php`
-4. 删除更新包
-5. 更新完成
+2. 访问域名/install/update.php，例如：`http://www.example.com/install/update.php`
+3. 更新完成
 ## 特色功能
 - 代理系统功能
 - 分站系统功能
+- 多管理员协同操作
 - 邀请连接功能
 - 支付/服务器插件系统
-- 模板系统
-- 用户价格等级功能
+- 前台模板系统
 - 开放API系统
-## 最新更新(v.2.3)：
-- 加入PHPMailer发送邮件
-- 新增数据分页功能
-- 新增产品组，产品隐藏功能
-- 新增优惠码续费续费,代理限制功能
-- 新增找回密码功能
-- 新增续费邮件提醒
-- 新增仿星外API接口
-- 更新主站与分站分隔
-- 更新服务器插件系统
-- 更新分站消费计费模式
-- 更新邀请链接计费模式
-- 更新模板系统
-- 更新系统对接API
-- 更新超级后台防呆机制
-- 取消分站自定义模板功能
-- 修复2.2版本多个bugs
-## 常见问题：
-1. 默认站点有什么用？  
-默认站点所使用域名为安装时使用的域名，若修改默认站点域名，超级后台域名亦会随之更变。
-2. 超级后台提示该站点未开通？  
-超级后台浏览的域名必须是已搭建站点的域名，若提示站点未开通请使用默认站点的域名进行浏览。
-3. 分站系统利润如何计算？  
-分站搭建之后，站长通过宣传分站，吸引用户注册。用户注册时，默认邀请人为分站站长，当用户有所消费时，会通过后台设置的邀请奖励进行返现。
-4. 价格组如何批量设置价格？  
-在后台的价格组管理点击批量设置价格，批量设置的价格会使用默认的价格组进行设置。  
-5. 发现bug如何提交反馈？  
-可以在本平台提交issue或者进入官方交流群进行反馈。
+## 最新更新(v.2.4)：
+- 新增多管理员功能
+- 新增二级目录功能
+- 新增限制购买功能
+- 新增注册登陆验证码功能
+- 新增在线更新功能
+- 新增订单重新开通功能
+- 新增订单暂停状态
+- 新增工单回复邮件
+- 新增分类介绍功能
+- 更新服务器插件系统架构
+- 更新用户密码加密方法
+- 更新用户登陆验证方法
+- 更新工单架构
+- 更新支付插件架构
+- 更新模板系统架构
+- 删除星外对接接口
+- 修复2.3版本bugs

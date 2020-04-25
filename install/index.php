@@ -54,140 +54,150 @@ function random($length, $numeric = 0) {
 	return $hash;
 }
 ?>
+<!doctype html>
+<html  lang="en">
 
+    <head>
+        <!-- meta data -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-<html lang="zh-cn">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-<title>云塔IDC财务管理系统</title>
-<link href="//cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--font-family-->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
+        
+        <!-- title of site -->
+        <title>安装系统 - 云塔IDC财务管理系统v2.4</title>
 
-</head>
-<body>
-<nav class="navbar navbar-fixed-top navbar-default">
-    <div class="container">
-      <div class="navbar-header">
-        <span class="navbar-brand">安装向导[使用彩虹系统安装页面]</span>
-      </div>
-    </div>
-  </nav>
-  <div class="container" style="padding-top:60px;">
-    <div class="col-xs-12 col-sm-8 col-lg-6 center-block" style="float: none;">
+        <!-- For favicon png -->
+		<link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png"/>
+       
+        <!--font-awesome.min.css-->
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!--animate.css-->
+        <link rel="stylesheet" href="assets/css/animate.css">
+		
+        <!--bootstrap.min.css-->
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		
+		<!-- bootsnav -->
+		<link rel="stylesheet" href="assets/css/bootsnav.css" >	
+        
+        <!--style.css-->
+        <link rel="stylesheet" href="assets/css/style.css">
+        
+        <!--responsive.css-->
+        <link rel="stylesheet" href="assets/css/responsive.css">
+        
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		
+        <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+	
+	<body style="background-color: #f4f6fa;">
+		<!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+		
+		<!-- signin end -->
+		<section class="signin signup">
+			<div class="container">
+
+				<div class="sign-content">
+					<h2>云塔IDC系统v2.4</h2>
 
 <?php if($do=='0'){
 $_SESSION['checksession']=1;
 ?>
-<div class="panel panel-primary">
-	<div class="panel-heading" style="background: #15A638;">
-		<h3 class="panel-title" align="center">云塔IDC财务管理系统</h3>
-	</div>
-	<div class="panel-body">
-		<p><iframe src="./readme.txt?r=<?php echo time()?>" style="width:100%;height:465px;"></iframe></p>
-		<?php if($installed){ ?>
-		<div class="alert alert-warning">您已经安装过，如需重新安装请删除<font color=red> install/install.lock </font>文件后再安装！</div>
-		<?php }else{?>
-		<p align="center"><a class="btn btn-primary" href="index.php?do=1">开始安装</a></p>
-		<?php }?>
-	</div>
-</div>
+<iframe src="./readme.txt" frameborder="0" style="width: 100%;height: 480px;"></iframe>
+
+<div class="signin-footer">
+	<a href="?do=1"><button type="button" class="btn signin_btn signin_btn_two" data-toggle="modal" data-target=".signin_modal">
+	进行安装
+	</button></a>
+</div><!--/.signin-footer -->
 
 <?php }elseif($do=='1'){?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">环境检查</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
-	<span class="sr-only">10%</span>
-  </div>
-</div>
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th style="width:20%">函数检测</th>
-			<th style="width:15%">需求</th>
-			<th style="width:15%">当前</th>
-			<th style="width:50%">用途</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>PHP 5.4+</td>
-			<td>必须</td>
-			<td><?php echo version_compare(PHP_VERSION, '5.4.0', '>')?'<font color="green">'.PHP_VERSION.'</font>':'<font color="red">'.PHP_VERSION.'</font>'; ?></td>
-			<td>PHP版本支持</td>
-		</tr>
-		<tr>
-			<td>curl_exec()</td>
-			<td>必须</td>
-			<td><?php echo checkfunc('curl_exec',true); ?></td>
-			<td>抓取网页</td>
-		</tr>
-		<tr>
-			<td>file_get_contents()</td>
-			<td>必须</td>
-			<td><?php echo checkfunc('file_get_contents',true); ?></td>
-			<td>读取文件</td>
-		</tr>
-		<tr>
-			<td>session</td>
-			<td>必须</td>
-			<td><?php echo $_SESSION['checksession']==1?'<font color="green">可用</font>':'<font color="red">不支持</font>'; ?></td>
-			<td>PHP必备功能</td>
-		</tr>
-	</tbody>
-</table>
-<p><span><a class="btn btn-primary" href="index.php?do=0"><<上一步</a></span>
-<span style="float:right"><a class="btn btn-primary" href="index.php?do=2" align="right">下一步>></a></span></p>
-</div>
+
+	<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>环境名称</th>
+								<th>当前环境</th>
+								<th>要求环境</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>PHP版本</td>
+								<td><?php echo PHP_VERSION; ?></td>
+								<td>7.3</td>
+							</tr>
+							<tr>
+								<td>file_get_contents()功能</td>
+								<td><?php echo checkfunc('file_get_contents',true); ?></td>
+								<td>True</td>
+							</tr>
+							<tr>
+								<td>curl_exec()</td>
+								<td><?php echo checkfunc('curl_exec',true); ?></td>
+								<td>True</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="signin-footer">
+						<a href="?do=2"><button type="button" class="btn signin_btn signin_btn_two">
+						进行安装
+						</button></a>
+					</div><!--/.signin-footer -->
 
 <?php }elseif($do=='2'){?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">数据库配置</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 30%">
-	<span class="sr-only">30%</span>
-  </div>
-</div>
-	<div class="panel-body">
-	<?php
-echo <<<HTML
-		<form action="?do=3" class="form-sign" method="post">
-		<label for="name">数据库地址:</label>
-		<input type="text" class="form-control" name="db_host" value="localhost">
-		<label for="name">数据库端口:</label>
-		<input type="text" class="form-control" name="db_port" value="3306">
-		<label for="name">数据库用户名:</label>
-		<input type="text" class="form-control" name="db_user">
-		<label for="name">数据库密码:</label>
-		<input type="text" class="form-control" name="db_pwd">
-		<label for="name">数据库名:</label>
-		<input type="text" class="form-control" name="db_name">
-		<!--label for="name">数据表前缀:</label>
-		<input type="text" class="form-control" name="db_qz" value="shua"-->
-		<br><input type="submit" class="btn btn-primary btn-block" name="submit" value="保存配置">
-		</form><br/>
-		（如果已事先填写好config.php相关数据库配置，请 <a href="?do=3&jump=1">点击此处</a> 跳过这一步！）
-HTML;
-?>
-	</div>
-</div>
+	<div class="signin-form">
+						<div class=" ">
+							<div class=" ">
+								<form action="?do=3" method="POST">
+									<div class="form-group">
+									    <label for="signin_form">数据库地址</label>
+									    <input type="text" class="form-control" name="db_host" id="signin_form" placeholder="数据库地址" value="localhost">
+									</div><!--/.form-group -->
+									<div class="form-group">
+										<label for="signin_form">数据库账号</label>
+									    <input type="text" class="form-control" name="db_user" id="signin_form" placeholder="数据库账号">
+									</div><!--/.form-group -->
+									<div class="form-group">
+										<label for="signin_form">数据库密码</label>
+									    <input type="password" class="form-control" name="db_pwd" id="signin_form" placeholder="数据库密码">
+									</div><!--/.form-group -->
+									<div class="form-group">
+										<label for="signin_form">数据库名称</label>
+									    <input type="text" class="form-control" name="db_name" id="signin_form" placeholder="数据库名称">
+									</div><!--/.form-group -->
+									<div class="form-group">
+										<label for="signin_form">数据库端口</label>
+									    <input type="number" class="form-control" name="db_port" id="signin_form" placeholder="数据库端口" value="3306">
+									</div><!--/.form-group -->
+							</div><!--/.col -->
+						</div><!--/.row -->
+
+					</div><!--/.signin-form -->
+
+					<div class="signin-footer">
+						<button type="submit" class="btn signin_btn signin_btn_two">
+						安装程序
+						</button>
+</form>
+					</div><!--/.signin-footer -->
 
 <?php }elseif($do=='3'){
 ?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">保存数据库</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
-	<span class="sr-only">50%</span>
-  </div>
-</div>
-	<div class="panel-body">
 <?php
 	$db_host=isset($_POST['db_host'])?$_POST['db_host']:NULL;
 	$db_port=isset($_POST['db_port'])?$_POST['db_port']:NULL;
@@ -197,7 +207,10 @@ HTML;
 	$db_qz=isset($_POST['db_qz'])?$_POST['db_qz']:'shua';
 
 	if($db_host==null || $db_port==null || $db_user==null || $db_pwd==null || $db_name==null || $db_qz==null){
-		echo '<div class="alert alert-danger">保存错误,请确保每项都不为空<hr/><a href="javascript:history.back(-1)"><< 返回上一页</a></div>';
+		echo '<p>保存错误,请确保每项都不为空<hr/>
+		<a href="?do=2"><button type="button" class="btn signin_btn signin_btn_two">
+		上一步
+		</button></a></p>';
 	} else {
 		$config="<?php
 /*数据库配置*/
@@ -211,36 +224,33 @@ HTML;
 );
 ?>";
 		if(!$con= new mysqli($db_host, $db_user, $db_pwd, $db_name, $db_port)){
-			echo '<div class="alert alert-warning">连接数据库失败，请认真检查相关信息！</div>';
+			echo '<p>连接数据库失败，请认真检查相关信息！</p>';
 		}elseif(file_put_contents('../config.php',$config)){
 			if(function_exists("opcache_reset"))@opcache_reset();
-				echo '<div class="alert alert-success">数据库配置文件保存成功！</div>';
+				echo '<p>数据库配置文件保存成功！</p>';
 			if($con->query("select * from ".$db_qz."_config where 1")->num_rows == 0){
-				echo '<p align="right"><a class="btn btn-primary btn-block" href="?do=4">创建数据表>></a></p>';
+				echo '<p>
+				<a href="?do=4"><button type="button" class="btn signin_btn signin_btn_two">
+				创建数据表
+				</button></a></p>';
 			}else{
-				echo '<p align="right">你已经安装过了，如需继续安装，请清除数据库数据！</p>';
+				echo '<p>你已经安装过了，如需继续安装，请清除数据库数据！</p>';
 			}
 		}else
-			echo '<div class="alert alert-danger">保存失败，请确保网站根目录有写入权限<hr/><a href="javascript:history.back(-1)"><< 返回上一页</a></div>';
+			echo '<p>保存失败，请确保网站根目录有写入权限<hr/>
+			<a href="?do=2"><button type="button" class="btn signin_btn signin_btn_two">
+			上一步
+			</button></a></p>';
 	}
 ?>
-	</div>
-</div>
 <?php }elseif($do=='4'){?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">创建数据表</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
-	<span class="sr-only">70%</span>
-  </div>
-</div>
-	<div class="panel-body">
 <?php
 include_once '../config.php';
 if(!$dbconfig['user']||!$dbconfig['pass']||!$dbconfig['name']) {
-	echo '<div class="alert alert-danger">请先填写好数据库并保存后再安装！<hr/><a href="javascript:history.back(-1)"><< 返回上一页</a></div>';
+	echo '<p>请先填写好数据库并保存后再安装！<hr/>
+	<a href="?do=3"><button type="button" class="btn signin_btn signin_btn_two">
+	上一步
+	</button></a></p>';
 } else {
 	$sql=file_get_contents("install.sql");
 	$sql=explode(';',$sql);
@@ -261,52 +271,87 @@ if(!$dbconfig['user']||!$dbconfig['pass']||!$dbconfig['name']) {
 	$date = date("Y-m-d");
 }
 if($e==0) {
-	echo '<div class="alert alert-success">安装成功！<br/>SQL成功'.$t.'句/失败'.$e.'句</div><p align="right"><a class="btn btn-block btn-primary" href="index.php?do=5">下一步>></a></p>';
+	echo '<p">安装成功！<br/>SQL成功'.$t.'句/失败'.$e.'句</p><p>
+	<a href="?do=5"><button type="button" class="btn signin_btn signin_btn_two">
+	下一步
+	</button></a></p>';
 } else {
-	echo '<div class="alert alert-danger">安装失败<br/>SQL成功'.$t.'句/失败'.$e.'句<br/>错误信息：'.$error.'</div><p align="right"><a class="btn btn-block btn-primary" href="index.php?do=4">点此进行重试</a></p>';
+	echo '<p>安装失败<br/>SQL成功'.$t.'句/失败'.$e.'句<br/>错误信息：'.$error.'</p><p>
+	<a href="?do=4"><button type="button" class="btn signin_btn signin_btn_two">
+	上一步
+	</button></a></p>';
 }
 ?>
-	</div>
-</div>
 
 <?php }elseif($do=='5'){?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">安装完成</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-	<span class="sr-only">100%</span>
-  </div>
-</div>
-	<div class="panel-body">
 <?php
 	@file_put_contents("install.lock",'安装锁');
-	echo '<div class="alert alert-info"><font color="green">安装完成！管理账号和密码是:admin/123456</font><br/><br/><a href="../">>>网站首页</a>｜<a href="../sysadmin/">>>后台管理</a><hr/>更多设置选项请登录后台管理进行修改。<br/><br/><font color="#FF0033">如果你的空间不支持本地文件读写，请自行在install/ 目录建立 install.lock 文件！</font></div>';
+	unlink('index.php');
+	unlink('install.sql');
+	echo '
+	<p>安装成功！默认账号密码：admin/123456</p>
+
+	<div class="signin-footer">
+		<a href="/sysadmin"><button type="button" class="btn signin_btn signin_btn_two">
+		点击进入管理后台
+		</button></a>
+	</div><!--/.signin-footer -->';
 ?>
-	</div>
-</div>
 
 <?php }elseif($do=='6'){?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title" align="center">安装完成</h3>
-	</div>
-<div class="progress progress-striped">
-  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-	<span class="sr-only">100%</span>
-  </div>
-</div>
-	<div class="panel-body">
 <?php
 	@file_put_contents("install.lock",'安装锁');
-	echo '<div class="alert alert-info"><font color="green">安装完成！管理账号和密码是:admin/123456</font><br/><br/><a href="../">>>网站首页</a>｜<a href="../sysadmin/">>>后台管理</a><hr/>更多设置选项请登录后台管理进行修改。<br/><br/><font color="#FF0033">如果你的空间不支持本地文件读写，请自行在install/ 目录建立 install.lock 文件！</font></div>';
-?>
-	</div>
-</div>
+	unlink('index.php');
+	unlink('install.sql');
+	echo '
+	<p>安装成功！默认账号密码：admin/123456</p>
 
+	<div class="signin-footer">
+	<a href="/sysadmin"><button type="button" class="btn signin_btn signin_btn_two">
+	点击进入管理后台
+	</button></a>
+	</div><!--/.signin-footer -->';
+?>
 <?php }?>
 
-</div>
-</body>
+</div><!--/.sign-content -->
+			</div><!--/.container -->
+
+		</section><!--/.signin -->
+		
+		<!-- signin end -->
+
+		<!--footer copyright start -->
+		<footer class="footer-copyright">
+			<div id="scroll-Top">
+				<i class="fa fa-angle-double-up return-to-top" id="scroll-top" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back to Top" aria-hidden="true"></i>
+			</div><!--/.scroll-Top-->
+
+		</footer><!--/.hm-footer-copyright-->
+		<!--footer copyright  end -->
+
+
+		 <!-- Include all js compiled plugins (below), or include individual files as needed -->
+
+		<script src="assets/js/jquery.js"></script>
+        
+        <!--modernizr.min.js-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+		
+		<!--bootstrap.min.js-->
+        <script src="assets/js/bootstrap.min.js"></script>
+		
+		<!-- bootsnav js -->
+		<script src="assets/js/bootsnav.js"></script>
+		
+		<!-- jquery.sticky.js -->
+		<script src="assets/js/jquery.sticky.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+		
+        
+        <!--Custom JS-->
+        <script src="assets/js/custom.js"></script>
+
+    </body>
+	
 </html>

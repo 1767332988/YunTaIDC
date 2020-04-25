@@ -17,9 +17,30 @@ function XiaoYu_Example_RenewService($params){
     );
 }
 
-function XiaoYu_example_DeleteService($params){
+function XIaoYu_Example_ConnectServer($params){
+	return array(
+		'status' => 'success',
+		'msg' => '测试成功'
+	);
+}
+
+function XiaoYu_Example_DeleteService($params){
 	return array(
 		'status' => 'success',
 		'msg' => '删除成功',
+	);
+}
+
+function XiaoYu_Example_SuspendService($params){
+	return array(
+		'status' => 'success',
+		'msg' => '暂停成功',
+	);
+}
+
+function XiaoYu_Example_UnsuspendService($params){
+	return array(
+		'status' => 'success',
+      	'enddate' => date('Y-m-d', strtotime("+{$params['data']['time']['day']} days", strtotime($params['service']['enddate']))),
 	);
 }

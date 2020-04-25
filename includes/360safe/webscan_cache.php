@@ -10,5 +10,5 @@ $webscan_referre=1;
 $webscan_white_directory='';
 //url白名单,可以自定义添加url白名单,默认是对phpcms的后台url放行
 //写法：比如phpcms 后台操作url index.php?m=admin php168的文章提交链接post.php?job=postnew&step=post ,dedecms 空间设置edit_space_info.php
-//$webscan_white_url = array('set.php' => 'mod=site_n', '/set.php' => 'mod=gonggao_n', 'shopedit.php' => 'my=edit_submit', '/shopedit.php' => 'my=add_submit', 'message.php' => 'my=add_submit', '/message.php' => 'my=edit_submit', '/uset.php' => 'mod=site_n');
+$webscan_white_url = array('editnotice.php' => 'act=edit');
 ?>

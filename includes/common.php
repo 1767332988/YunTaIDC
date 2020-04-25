@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 define("CACHE_FILE", 0);
 define("IN_CRONLITE", true);
 define("SYSTEM_ROOT", dirname(__FILE__) . "/");
@@ -19,14 +19,16 @@ if(!file_exists(ROOT."install/install.lock")){
 }
 if(file_exists(ROOT."install/index.php") || file_exists(ROOT."install/install.sql")){
 	exit('检测到您还没有删除安装的页面，可能会造成无法估计的损失，请前往install目录删除index.php以及install.sql');
-}/*
-if(file_exists(ROOT."install/update.sql") || file_exists(ROOT."install/update.php")){
-	exit('检测到您还没有删除更新的页面，可能会造成无法估计的损失，请前往install目录删除update.php以及update.sql');
-}*/
+}
+if(file_exists(ROOT."install/update.php")){
+	@header("Location: /install/update.php");
+	exit;
+}
 if(is_file(SYSTEM_ROOT.'360safe/360webscan.php')){//360网站卫士
     require_once(SYSTEM_ROOT.'360safe/360webscan.php');
 }
 include_once(SYSTEM_ROOT.'security.php');
+require_once(SYSTEM_ROOT.'cloud.class.php');
 require(ROOT."config.php");
 if (!$dbconfig["user"] || !$dbconfig["pass"] || !$dbconfig["name"]) {
 	header("Content-type:text/html;charset=utf-8");
@@ -45,7 +47,7 @@ if(ismobile()){
 }else{
 	$template_name = $conf['template'];
 }
-$siteconf = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `domain`='{$domain}'");
+$siteconf = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `domain`='{$domain}'");
 if($siteconf->num_rows == 0){
   	$site = array(
   		'id' => '0',

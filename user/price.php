@@ -1,24 +1,16 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}
 }
 $id = daddslashes($_GET['update']);
 if(!empty($id)){
@@ -45,7 +37,7 @@ if(!empty($id)){
 		@header("Location: ./msg.php?msg=升级成功");
 		exit;
 	}
-	if($user['money'] >= $grade['need_save']&& $grade['need_paid'] != 0){
+	if($user['money'] >= $grade['need_save']&& $grade['need_save'] != 0){
 		$DB->query("UPDATE `ytidc_user` SET `grade`='{$grade['id']}' WHERE `id`='{$user['id']}'");
 		@header("Location: ./msg.php?msg=升级成功");
 		exit;	

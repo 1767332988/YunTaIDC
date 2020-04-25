@@ -1,9 +1,26 @@
 <?php
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('price_read', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
+}
+if(daddslashes($_GET['act']) == 'add'){
+	if(in_array('*', $permission) || in_array('price_create', $permission)){
+		$name = "新建价格组".rand(100, 999);
+		$DB->query("INSERT INTO `ytidc_grade`(`name`, `description`, `weight`, `need_paid`, `need_money`, `need_save`, `default`, `price`, `status`) VALUES ('{$name}','','0','0','0','0','0','','1')");
+		@header("Location: ./price.php");
+		exit;
+	}else{
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -21,7 +38,7 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              价格组列表<a href="./addprice.php" class="btn btn-primary btn-xs btn-small">添加</a>
+              价格组列表<a href="./price.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">
@@ -38,7 +55,7 @@ include("./head.php");
                   	 	echo '<tr>
                     <td>'.$row['id'].'</td>
                     <td>'.$row['name'].'</td>
-                    <td><a href="./editprice.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./setprice.php?id='.$row['id'].'" class="btn btn-success btn-xs btn-small">批量设置价格</a><a href="./editprice.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
+                    <td><a href="./editprice.php?id='.$row['id'].'" class="btn btn-primary btn-xs btn-small">编辑</a><a href="./setprice.php?id='.$row['id'].'" class="btn btn-success btn-xs btn-small">设置价格</a><a href="./editprice.php?act=del&id='.$row['id'].'" class="btn btn-default btn-xs btn-small">删除</a></td>
                   </tr>';
                   	 }
                   	?>

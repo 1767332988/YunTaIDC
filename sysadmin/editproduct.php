@@ -1,10 +1,16 @@
 <?php
 
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('product_write', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -13,6 +19,10 @@ if(empty($id)){
 }
 $act = daddslashes($_GET['act']);
 if($act == "del"){
+	if(!in_array('*', $permission) && !in_array('product_delete', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 	if($DB->query("SELECT * FROM `ytidc_service` WHERE `product`='{$id}'")->num_rows >= 1){
 		@header("Location: ./msg.php?msg=该产品尚有在线服务，暂时不允许删除");
 		exit;
@@ -27,37 +37,40 @@ if($act == "edit"){
       	$value = daddslashes($v);
       	$DB->query("UPDATE `ytidc_product` SET `{$k}`='{$value}' WHERE `id`='{$id}'");
     }
+    $time = daddslashes($_POST['period']);
+	foreach($time as $k => $v){
+		if(!empty($v['name'])){
+			$timearray[$k] = $v;
+		}
+ 	}
+	$time = json_encode(url_encode($timearray));
+	$DB->query("UPDATE `ytidc_product` SET `period`='{$time}' WHERE `id`='{$id}'");
   	$configoption = json_encode(daddslashes($_POST['configoption']));
   	$DB->query("UPDATE `ytidc_product` SET `configoption`='{$configoption}' WHERE `id`='{$id}'");
-  	$time = daddslashes($_POST['time']);
-  	foreach($time as $k => $v){
-  		if(!empty($v['name'])){
-  			$timearray[$k] = $v;
-  		}
-  	}
-  	$time = json_encode(url_encode($timearray));
-  	$DB->query("UPDATE `ytidc_product` SET `time`='{$time}' WHERE `id`='{$id}'");
   	@header("Location: ./editproduct.php?id={$id}");
   	exit;
 }
 $row = $DB->query("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'")->fetch_assoc();
 $row['configoption'] = json_decode($row['configoption'], 1);
-$time = json_decode(url_decode($row['time']),true);
+$time = json_decode(url_decode($row['period']), true);
 $timecount = count($time);
 $type = $DB->query("SELECT * FROM `ytidc_type` WHERE `status`='1'");
 $server = $DB->query("SELECT * FROM `ytidc_server` WHERE `status`='1'");
-$serverinfo = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$row['server']}'")->fetch_assoc();
-$descriptionhtml = file_get_contents("../templates/".$conf['template']."/user_buy_product_modal.template");
-$plugin = "../plugins/server/".$serverinfo['plugin']."/main.php";
-if(!file_exists($plugin) || !is_file($plugin)){
-	@header("Location: ./msg.php?msg=服务器插件不存在");
-	exit;
+if(!empty($row['server'])){
+	$serverinfo = $DB->query("SELECT * FROM `ytidc_server` WHERE `id`='{$row['server']}'")->fetch_assoc();
 }
-include($plugin);
+$descriptionhtml = file_get_contents("../templates/".$conf['template']."/user_buy_product_modal.template");
+if(!empty($serverinfo['plugin'])){
+	$plugin = "../plugins/server/".$serverinfo['plugin']."/main.php";
+	if(!file_exists($plugin) || !is_file($plugin)){
+		@header("Location: ./msg.php?msg=服务器插件不存在");
+		exit;
+	}
+	include($plugin);
+}
 include("./head.php");
 ?>
-
-<script>
+		<script>
         var count = <?=$timecount?>;
 
         //用来判断是删除 还是增加按钮 以便count值进行计算
@@ -78,23 +91,24 @@ include("./head.php");
 
             var tr = document.createElement('tr');
     	    	var td = document.createElement('td');
-    	    	td.innerHTML='<input type="text" class="form-control" name="time[' + count + '][name]" value="" style="min-width: 100px;"/>';
+    	    	td.innerHTML='<input type="text" class="form-control" name="period[' + count + '][name]" value="" style="min-width: 100px;"/>';
     			tr.appendChild(td);
     	    	var td = document.createElement('td');
-    	    	td.innerHTML='<input type="text" class="form-control" name="time[' + count + '][discount]" value="" style="min-width: 100px;"/>';
+    	    	td.innerHTML='<input type="text" class="form-control" name="period[' + count + '][price]" value="" style="min-width: 100px;"/>';
     			tr.appendChild(td);
     	    	var td = document.createElement('td');
-    	    	td.innerHTML='<input type="text" class="form-control" name="time[' + count + '][day]" value="" style="min-width: 100px;"/>';
+    	    	td.innerHTML='<input type="text" class="form-control" name="period[' + count + '][day]" value="" style="min-width: 100px;"/>';
     			tr.appendChild(td);
     	    	var td = document.createElement('td');
-    	    	td.innerHTML='<input type="text" class="form-control" name="time[' + count + '][remark]" value="" style="min-width: 100px;"/>';
+    	    	td.innerHTML='<input type="text" class="form-control" name="period[' + count + '][remark]" value="" style="min-width: 100px;"/>';
     			tr.appendChild(td);
     	    	var td = document.createElement('td');
-    	    	td.innerHTML='<select type="select" class="form-control" name="time[' + count + '][renew]" style="min-width: 100px;"><option value="1">允许</option><option value="0">不允许</option></select>';
+    	    	td.innerHTML='<select type="select" class="form-control" name="period[' + count + '][renew]" style="min-width: 100px;"><option value="1">允许</option><option value="0">不允许</option></select>';
     			tr.appendChild(td);
     		time.appendChild(tr);
+
         }
-        </script>
+</script>
 <div class="bg-light lter b-b wrapper-md">
   <h1 class="m-n font-thin h3">编辑产品</h1>
 </div>
@@ -150,6 +164,10 @@ include("./head.php");
               <input type="number" name="weight" class="form-control" placeholder="产品权重" value="<?=$row['weight']?>">
             </div>
             <div class="form-group">
+              <label>限制购买（0为不限制）</label>
+              <input type="number" name="limit" class="form-control" placeholder="限制购买" value="<?=$row['limit']?>">
+            </div>
+            <div class="form-group">
               <label>隐藏产品</label>
               <select name="hidden" class="form-control m-b">
             	<?php
@@ -162,13 +180,13 @@ include("./head.php");
               </select>
             </div>
             <div class="form-group">
-              <label>产品周期【留空名称为删除】<button class="btn btn-small btn-xs btn-primary" onclick="AddTimeInput()" type="button">添加周期</button></label>
+              <label>产品周期【留空名称为删除】<button class="btn btn-small btn-xs btn-primary" onclick="AddTimeInput()" type="button">新增周期</button></label>
 	            <div class="table-responsive">
 	              <table class="table table-striped b-t b-light">
 	                <thead>
 	                  <tr>
 	                    <th style="min-width: 100px;">周期名称</th>
-	                    <th style="min-width: 100px;">周期费率</th>
+	                    <th style="min-width: 100px;">周期价格</th>
 	                    <th style="min-width: 100px;">开通天数</th>
 	                    <th style="min-width: 100px;">周期备注</th>
 	                    <th style="min-width: 100px;">允许续费</th>
@@ -178,14 +196,14 @@ include("./head.php");
                     <?php
                                         	foreach($time as $k => $v){
                                             	echo '<tr>
-                                                <td><input type="text" class="form-control" placeholder="周期名称" name="time['.$k.'][name]" value="'.$v['name'].'" style="min-width: 100px;"></td>
-                                                <td><input type="text" class="form-control" placeholder="周期费率" name="time['.$k.'][discount]" value="'.$v['discount'].'" style="min-width: 100px;"></td>
-                                                <td><input type="text" class="form-control" placeholder="开通日数" name="time['.$k.'][day]" value="'.$v['day'].'" style="min-width: 100px;"></td>
-                                                <td><input type="text" class="form-control" placeholder="周期介绍" name="time['.$k.'][remark]" value="'.$v['remark'].'" style="min-width: 100px;"></td>';
+                                                <td><input type="text" class="form-control" placeholder="周期名称" name="period['.$k.'][name]" value="'.$v['name'].'" style="min-width: 100px;"></td>
+                                                <td><input type="text" class="form-control" placeholder="周期价格" name="period['.$k.'][price]" value="'.$v['price'].'" style="min-width: 100px;"></td>
+                                                <td><input type="text" class="form-control" placeholder="开通日数" name="period['.$k.'][day]" value="'.$v['day'].'" style="min-width: 100px;"></td>
+                                                <td><input type="text" class="form-control" placeholder="周期介绍" name="period['.$k.'][remark]" value="'.$v['remark'].'" style="min-width: 100px;"></td>';
                                                 if($v['renew'] == 1){
-                                                	echo '<td><select type="select" class="form-control" name="time['.$k.'][renew]" style="min-width: 100px;"><option value="1" selected>允许</option><option value="0">不允许</option></select></td>';
+                                                	echo '<td><select type="select" class="form-control" name="period['.$k.'][renew]" style="min-width: 100px;"><option value="1" selected>允许</option><option value="0">不允许</option></select></td>';
                                                 }else{
-                                                	echo '<td><select type="select" class="form-control" name="time['.$k.'][renew]" style="min-width: 100px;"><option value="1" >允许</option><option value="0" selected>不允许</option></select></td>';
+                                                	echo '<td><select type="select" class="form-control" name="period['.$k.'][renew]" style="min-width: 100px;"><option value="1" >允许</option><option value="0" selected>不允许</option></select></td>';
                                                 }
                                             	echo '</tr>';
                                             }
@@ -195,6 +213,7 @@ include("./head.php");
 	            </div>
             </div>
             <?php
+            if(!empty($serverinfo['plugin'])){
                                         if(function_exists($serverinfo['plugin']."_ConfigOption")){
                                         	$function = $serverinfo['plugin']."_ConfigOption";
                                         	$configoption = $function($serverinfo);
@@ -203,6 +222,12 @@ include("./head.php");
                                         			echo '<div class="form-group">
                                             <label>【插件配置】：'.$v['label'].'</label>
                                             <input type="text" class="form-control" name="configoption['.$k.']" placeholder="'.$v['placeholder'].'" maxlength="256" value="'.$row['configoption'][$k].'">
+                                        </div>';
+                                        		}
+                                        		if($v['type'] == "textarea"){
+                                        			echo '<div class="form-group">
+                                            <label>【插件配置】：'.$v['label'].'</label>
+                                            <textarea class="form-control" name="configoption['.$k.']" placeholder="'.$v['placeholder'].'">'.$row['configoption'][$k].'</textarea>
                                         </div>';
                                         		}
                                         		if($v['type'] == "number"){
@@ -226,6 +251,11 @@ include("./head.php");
                                         		}
                                         	}
                                         }
+            						}else{
+            							echo '<div class="form-group">
+                                            <label>插件配置：请先在服务器设置里面设置插件！</label>
+                                        </div>';
+            						}
             ?>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>

@@ -12,10 +12,17 @@
                                     <div class="card-title">
                                         <div class="title">
                                         	[分类列表]
-                                        	<a href="./buy.php?type=[id]" class="btn btn-default">[name]</a>
+                                        	<a href="./buy.php?type=[id]">[name]：</a>
+                                        	[二级分类列表]
+                                        		<a href="./buy.php?type=[id]">[name]</a>
+                                        	[/二级分类列表]
+                                        	<br>
                                         	[/分类列表]
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-body">
+                                    [type[description]]
                                 </div>
                                 <div class="card-body">
                                     <div class="row no-margin no-gap">

@@ -1,9 +1,26 @@
 <?php
 include("../includes/common.php");
-$session = md5($conf['admin'].$conf['password'].$conf['domain']);
-if(empty($_SESSION['adminlogin']) || $_SESSION['adminlogin'] != $session){
-  	@header("Location: ./login.php");
-  	exit;
+$admin = daddslashes($_SESSION['admin']);
+$admin = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$admin}'")->fetch_assoc();
+if($admin['lastip'] != getRealIp() || $_SESSION['adminip'] != getRealIp()){
+	@header("Location: ./login.php");
+	exit;
+}else{
+	$permission = json_decode($admin['permission'], true);
+	if(!in_array('*', $permission) && !in_array('product_read', $permission)){
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+	}
+}
+if(daddslashes($_GET['act']) == 'add'){
+	if(in_array('*', $permission) || in_array('product_create', $permission)){
+		$name = "新建产品".rand(100, 999);
+		$DB->query("INSERT INTO `ytidc_product` (`name`, `description`, `type`, `server`, `period`, `limit`, `configoption`, `weight`, `hidden` ,`status`) VALUES ('{$name}', '', '', '', '', '', '', '0', '0', '1')");
+		@header("Location: ./product.php");
+		exit;
+	}else{
+		@header("Location: ./msg.php?msg=你无权限进行此操作！");
+		exit;
+	}
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -24,7 +41,7 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              产品列表<a href="./addproduct.php" class="btn btn-primary btn-xs btn-small">添加</a>
+              产品列表<a href="./product.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">

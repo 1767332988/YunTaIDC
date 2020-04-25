@@ -1,42 +1,35 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-    	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'");
-    	if($site->num_rows != 1){
-    		exit('该用户尚未开通分站！<a href="./login.php">点此重新登陆</a>');
-    	}else{
-    		$site = $site->fetch_assoc();
-    	}
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}else{
+		$site = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `user`='{$user['id']}'");
+		if($site->num_rows != 1){
+			exit('该用户未开通分站！<a href="/user">点击返回用户中心</a>');
+		}else{
+			$site = $site->fetch_assoc();
+		}
+	}
 }
 $act = daddslashes($_GET['act']);
 if($act == "edit"){
   	foreach($_POST as $k => $v){
       	$value = daddslashes($v);
-      	$DB->query("UPDATE `ytidc_fenzhan` SET `{$k}`='{$value}' WHERE `id`='{$site['id']}'");
+      	$DB->query("UPDATE `ytidc_subsite` SET `{$k}`='{$value}' WHERE `id`='{$site['id']}'");
     }
   	@header("Location: ./config.php");
   	exit;
 }
 include("./head.php");
-$row = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `id`='{$id}'")->fetch_assoc();
+$row = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'")->fetch_assoc();
 ?>
 <div class="bg-light lter b-b wrapper-md">
   <h1 class="m-n font-thin h3">站点资料</h1>

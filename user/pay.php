@@ -1,31 +1,23 @@
 <?php
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}
 }
 $template = file_get_contents("../templates/".$template_name."/user_pay.template");
-$gateway = $DB->query("SELECT * FROM `ytidc_payplugin` WHERE `status`='1'");
+$gateway = $DB->query("SELECT * FROM `ytidc_gateway` WHERE `status`='1'");
 $gateway_template = find_list_html("支付通道列表", $template);
 while($row = $gateway->fetch_assoc()){
 	$gateway_template_code = array(
-		'gateway' => $row['gateway'],
-		'displayname' => $row['displayname'],
+		'gateway' => $row['id'],
+		'name' => $row['name'],
 		'fee' => $row['fee'],
 	);
 	$gateway_template_new = $gateway_template_new . template_code_replace($gateway_template[1][0], $gateway_template_code);

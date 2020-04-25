@@ -10,10 +10,11 @@ if(empty($_POST)){
 foreach($returndata as $k => $v){
 	$params[$k] = daddslashes($v);
 }
-$gateway_plugin = $params['yunta_gateway'];
+$gateway_id = $params['yunta_gateway'];
 unset($params['yunta_gateway']);
-$plugin = $DB->query("SELECT * FROM `ytidc_payplugin` WHERE `gateway`='{$gateway_plugin}'")->fetch_assoc();
+$plugin = $DB->query("SELECT * FROM `ytidc_gateway` WHERE `id`='{$gateway_id}'")->fetch_assoc();
 $configoption = json_decode($plugin['configoption'], true);
+$gateway_plugin = $plugin['gateway'];
 $gateway_plugin_return = ROOT."/plugins/payment/".$gateway_plugin."/main.php";
 require_once($gateway_plugin_return);
 $function = $gateway_plugin."_ProcessReturn";

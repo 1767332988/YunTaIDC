@@ -14,49 +14,28 @@ if(!empty($_SESSION['ytidc_user']) && !empty($_SESSION['ytidc_token'])){
       	}
     }
 }
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require_once(ROOT.'PHPMailer/src/PHPMailer.php');
-require_once(ROOT.'PHPMailer/src/SMTP.php');
-if(!empty($_POST['username'])){
-	$username = daddslashes($_POST['username']);
-    $user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-    if($user->num_rows != 1){
-    	exit('该用户不存在');
-    }else{
-    	$user = $user->fetch_assoc();
-
-			$mail = new PHPMailer(true);
-			try{
-				$mail->SMTPDebug = 0;                                 // 启用详细的调试输出
-			    $mail->isSMTP();                                      // 设置邮件使用SMTP
-			    $mail->Host = $conf['smtp_host'];                         // 指定主要和备份SMTP服务器
-			    $mail->SMTPAuth = true;                               // 启用SMTP验证
-			    $mail->Username = $conf['smtp_user'];                   // SMTP用户名
-			    $mail->Password = $conf['smtp_pass'];					// SMTP密码
-			    if($conf['smtp_secure'] != 0){
-					$mail->SMTPSecure = $conf['smtp_secure'];
-			    }                            // 启用TLS加密，`ssl`也接受
-			    $mail->Port = $conf['smtp_port'];                                    // TCP端口连接
-			
-			    //收件人
-			    $mail->setFrom($conf['smtp_user'], '云塔IDC财务管理系统');// 设置发送人信息(参数1：发送人邮箱，参数2：发送人名称)
-			    $mail->addAddress($user['email']);     // 添加收件人
-				$user['password'] = base64_decode($user['password']);
-			    //Content
-			    $mail->isHTML(true);                                  // 将电子邮件格式设置为HTML
-			    $mail->Subject = '找回用户密码';                       // 邮件主题，即标题
-			    $mail->Body    = "亲爱的{$user['username']}您好：<br /><br />
-			    				  您的账号刚才在本站点进行了找回密码的操作，您的密码为：{$user['password']}。若非您本人操作则无需理会本邮件，谢谢您的支持！<br /><br /><br />
-			    				  {$site['title']}<br />
-			    				  {$site['domain']}";    //邮件内容
-			
-			    $mail->send();
-			    exit('发送成功！<a href="/">点击返回</a>');
-			} catch (Exception $e) {
-			    exit('发送失败: '. $mail->ErrorInfo);
-			}	
-    }
+$act = daddslashes($_GET['act']);
+require_once(ROOT. 'includes/mail.class.php');
+if($act == "getcode"){
+	$user = daddslashes($_POST['user']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	$_SESSION['reset_code'] = rand(1000000000, 9999999999);
+	$mail = new SendMail;
+	$mail->FindPassMail($user, $_SESSION['reset_code'], $conf, $site);
+	@header("Location: ./findpass.php");
+	exit;
+}
+if($act == "reset"){
+	$code = daddslashes($_POST['code']);
+	$password = daddslashes($_POST['password']);
+	$user = daddslashes($_POST['user']);
+	$password = md5(md5($password));
+	if($code == $_SESSION['reset_code']){
+		$DB->query("UPDATE `ytidc_user` SET `password`-'{$password}' WHERE `username`='{$user}'");
+		exit('重置成功！<a href="./login.php">点击登陆</a>');
+	}else{
+		exit('验证码不正确！');
+	}
 }
 $template_code = array(
 	'site' => $site,

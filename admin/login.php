@@ -1,36 +1,33 @@
 <?php
 
 include("../includes/common.php");
-if(!empty($_SESSION['ytidc_user']) && !empty($_SESSION['ytidc_token'])){
-	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows == 1){
-    	$user = $user->fetch_assoc();
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey == $userkey1){
-      		@header("Location: ./index.php");
-      		exit;
-      	}
-    }
+if(!empty($_SESSION['yuntauser']) && !empty($_SESSION['userip'])){
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] == getRealIp() && $_SESSION['userip'] == getRealIp()){
+		@header("Location: ./index.php");
+		exit;
+	}
 }
 if(!empty($_POST['username']) && !empty($_POST['password'])){
     $username = daddslashes($_POST['username']);
-    $password = daddslashes($_POST['password']);
+    $password = md5(md5(daddslashes($_POST['password'])));
     $user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
     if($user->num_rows != 1){
     	exit('该用户不存在！<a href="./login.php">点此重新登陆</a>');
     }else{
     	$user = $user->fetch_assoc();
-    	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'");
+    	$site = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `user`='{$user['id']}'");
     	if($site->num_rows != 1){
     		exit('该用户尚未开通分站！<a href="./login.php">点此重新登陆</a>');
     	}else{
     		$site = $site->fetch_assoc();
     	}
-	    if(base64_encode($password) == $user['password']){
-	        $_SESSION['ytidc_user'] = $username;
-	        $_SESSION['ytidc_token'] = md5($_SERVER['HTTP_HOST'].$user['password']);
+	    if($password == $user['password']){
+	        $_SESSION['yuntauser'] = $user['username'];
+	        $ip = getRealIp();
+	        $_SESSION['userip'] = $ip;
+	        $DB->query("UPDATE `ytidc_user` SET `lastip`='{$ip}' WHERE `username`='{$user['username']}'");
 	      	@header("Location: ./index.php");
 	      	exit;
 	    }else{
@@ -47,12 +44,12 @@ if(!empty($_POST['username']) && !empty($_POST['password'])){
   <title>仪表盘 | 云塔IDC财务管理系统v2.3</title>
   <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-  <link rel="stylesheet" href="css/animate.css" type="text/css" />
-  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
-  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
-  <link rel="stylesheet" href="css/font.css" type="text/css" />
-  <link rel="stylesheet" href="css/app.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/app.css" type="text/css" />
 </head>
 <body>
   <div class="app app-header-fixed  ">
@@ -89,8 +86,8 @@ if(!empty($_POST['username']) && !empty($_POST['password'])){
     
     </div>
   <!-- jQuery -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/jquery/bootstrap.js"></script>
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+  <script src="/assets/vendor/jquery/bootstrap.js"></script>
   <script type="text/javascript">
     +function ($) {
       $(function(){

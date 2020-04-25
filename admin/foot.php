@@ -11,8 +11,8 @@
     <!-- / footer -->
   </div>
   <!-- jQuery -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/jquery/bootstrap.js"></script>
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+  <script src="/assets/vendor/jquery/bootstrap.js"></script>
   <script type="text/javascript">
     +function ($) {
       $(function(){

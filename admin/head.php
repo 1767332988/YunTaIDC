@@ -5,12 +5,12 @@
   <title>仪表盘 | 云塔IDC系统v2.3</title>
   <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
-  <link rel="stylesheet" href="css/animate.css" type="text/css" />
-  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
-  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
-  <link rel="stylesheet" href="css/font.css" type="text/css" />
-  <link rel="stylesheet" href="css/app.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/font.css" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/app.css" type="text/css" />
 </head>
 <body>
   <div class="app app-header-fixed" id="app">
@@ -27,7 +27,7 @@
         <!-- brand -->
         <a href="#/" class="navbar-brand text-lt">
           <i class="fa fa-cloud"></i>
-          <img src="img/logo.png" alt="." class="hide">
+          <img src="/assets/img/logo.png" alt="." class="hide">
           <span class="hidden-folded m-l-xs">管理面板</span>
         </a>
         <!-- / brand -->

@@ -32,7 +32,7 @@
 												    <td>[username]</td>
 												    <td>[product]</td>
 												    <td>[enddate]</td>
-												    <td><a href="./servicedetail.php?id=[id]">前往管理服务>>></a></td>
+												    <td><a href="./servicedetail.php?id=[id]">续费服务</a> | <a href="./serviceadm.php?id=[id]">管理服务</a></td>
 												</tr>
                                           [/在线服务列表]
                                         </tbody>

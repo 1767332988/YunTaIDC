@@ -1,29 +1,29 @@
 <?php
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-    	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'");
-    	if($site->num_rows != 1){
-    		exit('该用户尚未开通分站！<a href="./login.php">点此重新登陆</a>');
-    	}else{
-    		$site = $site->fetch_assoc();
-    	}
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}else{
+		$site = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `user`='{$user['id']}'");
+		if($site->num_rows != 1){
+			exit('该用户未开通分站！<a href="/user">点击返回用户中心</a>');
+		}else{
+			$site = $site->fetch_assoc();
+		}
+	}
+}
+if(daddslashes($_GET['act']) == 'add'){
+	$date = date('Y-m-d');
+	$rand = rand(100, 999);
+	$DB->query("INSERT INTO `ytidc_notice` (`title`, `content`, `date`, `site`, `status`) VALUES ('新建公告{$rand}', '', '{$date}', '{$site['id']}', '1')");
+	@header("Location: ./notice.php");
+	exit;
 }
 if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = daddslashes($_GET['page']) - 1;
@@ -41,7 +41,7 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              公告列表<a href="./addnotice.php" class="btn btn-primary btn-xs btn-small">添加</a>
+              公告列表<a href="?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">

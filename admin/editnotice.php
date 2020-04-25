@@ -1,30 +1,23 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-    	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'");
-    	if($site->num_rows != 1){
-    		exit('该用户尚未开通分站！<a href="./login.php">点此重新登陆</a>');
-    	}else{
-    		$site = $site->fetch_assoc();
-    	}
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}else{
+		$site = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `user`='{$user['id']}'");
+		if($site->num_rows != 1){
+			exit('该用户未开通分站！<a href="/user">点击返回用户中心</a>');
+		}else{
+			$site = $site->fetch_assoc();
+		}
+	}
 }
 $id = daddslashes($_GET['id']);
 if(empty($id)){
@@ -55,6 +48,26 @@ if($row->num_rows != 1){
 	$row = $row->fetch_assoc();
 }
 ?>
+<link rel="stylesheet" href="/assets/umeditor/themes/default/css/umeditor.css">
+<!-- 引用jquery -->
+<script src="/assets/umeditor/third-party/jquery.min.js"></script>
+<!-- 引入 etpl -->
+<script type="text/javascript" src="/assets/umeditor/third-party/template.min.js"></script>
+<!-- 配置文件 -->
+<script type="text/javascript" src="/assets/umeditor/umeditor.config.js"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="/assets/umeditor/umeditor.js"></script>
+<!-- 语言包文件 -->
+<script type="text/javascript" src="/assets/umeditor/lang/zh-cn/zh-cn.js"></script>
+<!-- 实例化编辑器代码 -->
+<script type="text/javascript">
+    $(function(){
+        window.um = UM.getEditor('container', {
+        	/* 传入配置参数,可配参数列表看umeditor.config.js */
+            toolbar: ['source | undo redo | bold italic underline strikethrough | fontsize fontfamily paragraph | subscript superscript | link image']
+        });
+    });
+</script>
 <div class="bg-light lter b-b wrapper-md">
   <h1 class="m-n font-thin h3">编辑公告</h1>
 </div>
@@ -71,7 +84,11 @@ if($row->num_rows != 1){
             </div>
             <div class="form-group">
               <label>公告内容</label>
-              <textarea name="content" class="form-control"><?=$row['content']?></textarea>
+              <div>
+	              <script id="container" name="content" type="text/plain" style="width:100%;height:200px;">
+					    <?=$row['content']?>
+					</script>
+    		  </dib>
             </div>
             <button type="submit" class="btn btn-sm btn-primary">提交</button>
           </form>

@@ -1,30 +1,23 @@
 <?php
 
 include("../includes/common.php");
-if(empty($_SESSION['ytidc_user']) || empty($_SESSION['ytidc_token'])){
+if(empty($_SESSION['yuntauser']) || empty($_SESSION['userip'])){
   	@header("Location: ./login.php");
      exit;
 }else{
-  	$username = daddslashes($_SESSION['ytidc_user']);
-  	$userkey = daddslashes($_SESSION['ytidc_token']);
-  	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'");
-  	if($user->num_rows != 1){
-      	@header("Location: ./login.php");
-      	exit;
-    }else{
-    	$user = $user->fetch_assoc();
-    	$site = $DB->query("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'");
-    	if($site->num_rows != 1){
-    		exit('该用户尚未开通分站！<a href="./login.php">点此重新登陆</a>');
-    	}else{
-    		$site = $site->fetch_assoc();
-    	}
-      	$userkey1 = md5($_SERVER['HTTP_HOST'].$user['password']);
-      	if($userkey != $userkey1){
-      		@header("Location: ./login.php");
-      		exit;
-      	}
-    }
+	$user = daddslashes($_SESSION['yuntauser']);
+	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'")->fetch_assoc();
+	if($user['lastip'] != getRealIp() || $_SESSION['userip'] != getRealIp()){
+		@header("Location: ./login.php");
+		exit;
+	}else{
+		$site = $DB->query("SELECT * FROM `ytidc_subsite` WHERE `user`='{$user['id']}'");
+		if($site->num_rows != 1){
+			exit('该用户未开通分站！<a href="/user">点击返回用户中心</a>');
+		}else{
+			$site = $site->fetch_assoc();
+		}
+	}
 }
 $usernum = $DB->query("SELECT * FROM `ytidc_user` WHERE `site`='{$site['id']}'")->num_rows;
 $order = $DB->query("SELECT * FROM `ytidc_order` WHERE `user`='{$user['id']}'")->num_rows;
