@@ -55,7 +55,7 @@ $versions = $cloud->getSystemVersion();
             </div>
             <div class="form-group">
               <label>当前版本</label>
-              <input type="text" name="now" class="form-control" placeholder="当前版本" value="2.4.10" disabled>
+              <input type="text" name="now" class="form-control" placeholder="当前版本" value="2.4.30" disabled>
             </div>
             <div class="form-group">
               <label>选择版本</label>

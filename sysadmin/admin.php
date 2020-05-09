@@ -30,7 +30,12 @@ if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 	$page = 0;
 }
 $start = $page * 10;
-$result = $DB->query("SELECT * FROM `ytidc_admin` LIMIT {$start}, 10");
+if(daddslashes($_GET['act']) == "search"){
+	$search = daddslashes($_POST['search']);
+	$result = $DB->query("SELECT * FROM `ytidc_admin` WHERE `username`='{$search}'");
+}else{
+	$result = $DB->query("SELECT * FROM `ytidc_admin` LIMIT {$start}, 10");
+}
 include("./head.php");
 ?>
         <div class="bg-light lter b-b wrapper-md">
@@ -39,7 +44,17 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              管理员列表<a href="./admin.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
+            	<div class="col-sm-9">
+            		管理员列表<a href="./admin.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
+		        </div>
+		        <form action="./admin.php?act=search" method="POST">
+		        <div class="input-group col-sm-3">
+		          <input type="text" class="input-sm form-control" name="search" placeholder="管理用户名">
+		          <span class="input-group-btn">
+		            <button class="btn btn-sm btn-default" type="submit">查找</button>
+		          </span>
+		        </div>
+		        </form>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">
