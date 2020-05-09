@@ -18,7 +18,12 @@ if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 }
 $start = $page * 10;
 $title = "用户管理";
-$result = $DB->query("SELECT * FROM `ytidc_user` LIMIT {$start}, 10");
+if(daddslashes($_GET['act']) == "search"){
+	$search = daddslashes($_POST['search']);
+	$result = $DB->query("SELECT * FROM `ytidc_user` WHERE `username`='{$search}'");
+}else{
+	$result = $DB->query("SELECT * FROM `ytidc_user` LIMIT {$start}, 10");
+}
 include("./head.php");
 ?>
         <div class="bg-light lter b-b wrapper-md">
@@ -27,7 +32,17 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              用户列表
+            	<div class="col-sm-9">
+            		用户列表
+		        </div>
+		        <form action="./user.php?act=search" method="POST">
+		        <div class="input-group col-sm-3">
+		          <input type="text" class="input-sm form-control" name="search" placeholder="用户名">
+		          <span class="input-group-btn">
+		            <button class="btn btn-sm btn-default" type="submit">查找</button>
+		          </span>
+		        </div>
+		        </form>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">

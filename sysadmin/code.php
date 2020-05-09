@@ -29,7 +29,12 @@ if(isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1){
 }
 $start = $page * 10;
 $title = "优惠码管理";
-$result = $DB->query("SELECT * FROM `ytidc_promo` LIMIT {$start}, 10");
+if(daddslashes($_GET['act']) == "search"){
+	$search = daddslashes($_POST['search']);
+	$result = $DB->query("SELECT * FROM `ytidc_promo` WHERE `code`='{$search}'");
+}else{
+	$result = $DB->query("SELECT * FROM `ytidc_promo` LIMIT {$start}, 10");
+}
 $product1 = $DB->query("SELECT * FROM `ytidc_product`");
 while($row = $product1->fetch_assoc()){
 	$product[$row['id']] = $row['name'];
@@ -42,7 +47,17 @@ include("./head.php");
         <div class="wrapper-md">
           <div class="panel panel-default">
             <div class="panel-heading">
-              优惠码列表<a href="./code.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
+            	<div class="col-sm-9">
+            		优惠码列表<a href="./code.php?act=add" class="btn btn-primary btn-xs btn-small">添加</a>
+		        </div>
+		        <form action="./code.php?act=search" method="POST">
+		        <div class="input-group col-sm-3">
+		          <input type="text" class="input-sm form-control" name="search" placeholder="优惠码">
+		          <span class="input-group-btn">
+		            <button class="btn btn-sm btn-default" type="submit">查找</button>
+		          </span>
+		        </div>
+		        </form>
             </div>
             <div class="table-responsive">
               <table class="table table-striped b-t b-light">

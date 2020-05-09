@@ -58,7 +58,7 @@ if($act == "login"){
 	$ip = getRealIp();
 	$DB->query("UPDATE `ytidc_user` SET `lastip`='$ip' WHERE `id`='{$id}'");
 	$user = $DB->query("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'")->fetch_assoc();
-	$_SESSION['ytidc_user'] = $user['username'];
+	$_SESSION['yuntauser'] = $user['username'];
 	$_SESSION['userip'] = $ip;
 	@header("Location: /user/index.php");
 	exit;
