@@ -35,6 +35,17 @@ class Security{
         }
     }
     
+    public function daddslashes($string, $strip = FALSE){
+    	if(is_array($string)) {
+    		foreach($string as $key => $val) {
+    			$string[$key] = $this->daddslashes($val, $strip);
+    		}
+    	} else {
+    		$string = addslashes($strip ? stripslashes($string) : $string);
+    	}
+    	return $string;
+    }
+    
     public function webscan_error() {
       if (ini_get('display_errors')) {
         ini_set('display_errors', '0');
