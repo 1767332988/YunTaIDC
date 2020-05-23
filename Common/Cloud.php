@@ -1,6 +1,8 @@
 <?php
 
-namespace Cloud\Cloud;
+namespace YunTaIDC\Cloud;
+
+use Exception;
 
 class Cloud{
     

@@ -1,6 +1,6 @@
 <?php
 
-use Template\Template\Template;
+use YunTaIDC\Template\Template;
 
 class Pages{
     
@@ -30,6 +30,7 @@ class Pages{
         	'template_file_path' => '/templates/'.$this->template,
         );
         echo $this->templateLoader->SetTemplate('index', $template_code);
+        return true;
     }
     
     public function isMobile(){

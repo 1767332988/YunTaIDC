@@ -1,6 +1,6 @@
 <?php
 
-namespace Functions\Functions;
+namespace YunTaIDC\Functions;
 
 class Functions{
     

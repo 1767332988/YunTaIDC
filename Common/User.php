@@ -1,10 +1,10 @@
 <?php
 
-namespace User\User;
+namespace YunTaIDC\User;
 
-use Database\Database\Database;
-use Functions\Functions\Functions;
-use Security\Security\Security;
+use YunTaIDC\Database\Database;
+use YunTaIDC\Functions\Functions;
+use YunTaIDC\Security\Security;
 
 class User{
     

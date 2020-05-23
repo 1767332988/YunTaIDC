@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Database;
+namespace YunTaIDC\Database;
 use PDO as PDO;
 
 class Database{

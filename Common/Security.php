@@ -1,6 +1,6 @@
 <?php
 
-namespace Security\Security;
+namespace YunTaIDC\Security;
 
 class Security{
     

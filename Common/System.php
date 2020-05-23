@@ -1,14 +1,14 @@
 <?php
-namespace System\System;
+namespace YunTaIDC\System;
 
-require_once(ROOT."/Common/Database/Database.php");
+require_once(ROOT."/Common/Database.php");
 //require_once(ROOT."/Common/Plugin/PluginLoader.php");
-require_once(ROOT.'/Common/Security/Security.php');
-require_once(ROOT."/Common/Template/Template.php");
-use Database\Database\Database;
+require_once(ROOT.'/Common/Security.php');
+require_once(ROOT."/Common/Template.php");
+use YunTaIDC\Database\Database;
 //use Plugin\Plugin\PluginLoader;
-use Security\Security\Security;
-use Template\Template\Template;
+use YunTaIDC\Security\Security;
+use YunTaIDC\Template\Template;
 use Exception as Exception;
 use Pages as Pages;
 
@@ -80,7 +80,7 @@ class System{
     
     public function LoadPages($params){
         if(empty($params['p']) || empty($params['m'])){
-            $p = "index.php";
+            $p = "index";
             $m = "index";
         }else{
             $p = $params['p'];
@@ -90,7 +90,7 @@ class System{
             return false;
         }
         require_once(ROOT."/Common/Pages/".$p.'.php');
-        if(new Pages($m, $this->conf, $this->site, $this->DB)){
+        if(new Pages($m, $this->conf, $this->site, $this->DB, $params)){
             return true;
         }else{
             return false;

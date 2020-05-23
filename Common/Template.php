@@ -1,6 +1,6 @@
 <?php
 
-namespace Template\Template;
+namespace YunTaIDC\Template;
 
 class Template{
     
