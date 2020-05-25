@@ -24,6 +24,16 @@ class Functions{
         return ($ip ? $ip : $_SERVER['REMOTE_ADDR']);
     }
     
+    public function randomkeys($length)   {   
+        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';  
+        $key = "";
+        for($i=0;$i<$length;$i++)   
+        {   
+            $key = $key . $pattern[mt_rand(0,61)];    //生成php随机数   
+        }   
+        return $key;   
+    }   
+    
     public function url_decode($str) {  
         if(is_array($str)) {  
             foreach($str as $key=>$value) {  

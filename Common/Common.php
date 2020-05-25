@@ -6,10 +6,14 @@ define("SYSTEM_ROOT", dirname(__FILE__) . "/");
 define("ROOT", dirname(SYSTEM_ROOT) . "/");
 session_start();
 require_once(ROOT."/Common/System.php");
-//require_once(ROOT."/Common/Template/Template.php");
+require_once(ROOT."/Common/Template.php");
 require_once(ROOT."/Common/Security.php");
 require_once(ROOT."/Common/Format.php");
 require_once(ROOT."/Common/User.php");
+require_once(ROOT."/Common/Database.php");
+require_once(ROOT."/Common/Product.php");
+//require_once(ROOT."/Common/Service.php");
+require_once(ROOT."/Common/Server.php");
 use YunTaIDC\System\System;
 
 $system = new System();

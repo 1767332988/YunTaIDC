@@ -1,10 +1,7 @@
 <?php
 namespace YunTaIDC\System;
 
-require_once(ROOT."/Common/Database.php");
 //require_once(ROOT."/Common/Plugin/PluginLoader.php");
-require_once(ROOT.'/Common/Security.php');
-require_once(ROOT."/Common/Template.php");
 use YunTaIDC\Database\Database;
 //use Plugin\Plugin\PluginLoader;
 use YunTaIDC\Security\Security;

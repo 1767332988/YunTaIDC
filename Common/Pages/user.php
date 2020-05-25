@@ -103,7 +103,35 @@ class Pages{
         }else{
             $user = $this->user->GetUserInfo();
         }
-        
+        $template = $this->templateLoader->GetTemplateContent("user_notice");
+        if(!$template){
+            return false;
+        }
+        $notice_template = $this->templateLoader->find_list_html("公告列表", $template);
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='0'") as $row){
+    		$notice_template_code = array(
+    			'id' => $row['id'],
+    			'title' => $row['title'],
+    		);
+        	$notice_template_new = $notice_template_new . $this->templateLoader->template_code_replace($notice_template[1][0], $notice_template_code);
+        }
+        if($this->site['id'] != 0){
+        	foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='{$this->site['id']}'") as $row){
+        		$notice_template_code = array(
+        			'id' => $row['id'],
+        			'title' => $row['title'],
+        		);
+        		$notice_template_new = $notice_template_new . $this->templateLoader->template_code_replace($notice_template[1][0], $notice_template_code);
+        	}
+        }
+        $template = str_replace($notice_template[0][0], $notice_template_new, $template);
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+	        'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_notice', $template_code, $template);
     }
     
     public function Buy(){
@@ -376,7 +404,7 @@ class Pages{
         }else{
             $user = $this->user->GetUserInfo();
         }
-        $template = $this->templateLoader->GetTemplateContent("user_worder");
+        $template = $this->templateLoader->GetTemplateContent("user_workorder");
         if(!$template){
             return false;
         }
@@ -423,7 +451,7 @@ class Pages{
         	@header('Location: /index.php?p=user&m=Msg&msg=回复成功');
         	exit;
         }
-        $template = $this->templateLoader->GetTemplateContent("user_worder_detail");
+        $template = $this->templateLoader->GetTemplateContent("user_workorder_detail");
         $reply_template = $this->templateLoader->find_list_html('回复列表', $template);
         foreach($this->DB->get_rows("SELECT * FROM `ytidc_wreply` WHERE `worder`='{$this->getparams['workorderid']}'") as $row){
         	$reply_template_code = array(
@@ -441,11 +469,306 @@ class Pages{
         	'user' => $user,
         	'worder' => $worder,
         );
-        echo $this->templateLoader->SetTemplate('user_workorder', $template_code, $template);
+        echo $this->templateLoader->SetTemplate('user_workorder_detail', $template_code, $template);
     }
     
-    public function ServiceDetali(){
-        
+    public function ServiceDetail(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if(empty($this->getparams['serviceid'])){
+            @header("Location: /index.php?p=user&m=Service");
+            exit;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_service` WHERE `id`='{$this->getparams['serviceid']}' AND `userid`='{$user['id']}'") != 1){
+            @header("Location: /index.php?p=user&m=Service");
+            exit;
+        }else{
+            $service = $this->DB->get_row("SELECT * FROM `ytidc_service` WHERE `id`='{$this->getparams['serviceid']}' AND `userid`='{$user['id']}'");
+        }
+        if($service['status'] != '激活' && $service['status'] != '暂停'){
+        	@header("Location: /index.php?p=user&m=Msg&msg=服务状态：".$service['status'].'，联系上级处理！');
+        	exit();
+        }
+        $service['password'] = base64_decode($service['password']);
+        $product = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$service['product']}'");
+        $template = $this->templateLoader->GetTemplateContent("user_service_detail");
+        $time_template = $this->templateLoader->find_list_html('周期列表', $template);
+        $pdis = json_decode($this->formator->url_decode($product['period']), true);
+        if($user['grade'] != "0" && $this->DB->num_rows("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'") == 1){
+          	$grade = $this->DB->get_row("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'");
+          	$price = json_decode($grade['price'], true);
+        	if(empty($price[$product['id']])){
+        		$discount = $price['*'];
+        	}else{
+        		$discount = $price[$product['id']];
+        	}
+        	if(empty($discount)){
+        		$discount = 100;
+        	}
+        }else{
+        	$discount = 100;
+        }
+        foreach($pdis as $k => $v){
+        	$time_template_code = array(
+        		'name' => $v['name'],
+        		'price' => $discount * $v['price'] / 100,
+        	);
+        	$time_template_new = $time_template_new . $this->templateLoader->template_code_replace($time_template[1][0], $time_template_code);
+        }
+        $template = str_replace($time_template[0][0], $time_template_new, $template);
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        	'service' => $service,
+        	'product' => $product,
+        );
+        echo $this->templateLoader->SetTemplate('user_service_detail', $template_code, $template);
+    }
+    
+    public function NoticeDetail(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if(empty($this->getparams['noticeid'])){
+            @header("Location: /index.php?p=user&m=Notice");
+            exit;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_notice` WHERE `id`='{$this->getparams['noticeid']}'") != 1){
+            @header("Location: /index.php?p=user&m=Notice");
+            exit;
+        }else{
+            $notice = $this->DB->get_row("SELECT * FROM `ytidc_notice` WHERE `id`='{$this->getparams['noticeid']}'");
+        }
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        	'notice' => $notice,
+        );
+        echo $this->templateLoader->SetTemplate('user_notice_detail', $template_code);
+    }
+    
+    public function Cart(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if(empty($this->getparams['productid'])){
+            @header("Location: /index.php?p=user&m=Buy");
+            exit;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_product` WHERE `id`='{$this->getparams['productid']}'") != 1){
+            @header("Location: /index.php?p=user&m=Buy");
+            exit;
+        }else{
+            $product = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$this->getparams['productid']}'");
+        }
+        $pdis = json_decode($this->formator->url_decode($product['period']), true);
+        if($user['grade'] != "0" && $this->DB->num_rows("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'") == 1){
+          	$grade = $this->DB->get_row("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'");
+        	$price = json_decode($grade['price'], true);
+        	if(empty($price[$row['id']])){
+        		$discount = $price['*'];
+        	}else{
+        		$discount = $price[$product['id']];
+        	}
+        	if(empty($discount)){
+        		$discount = 100;
+        	}
+        }else{
+        	$discount = 100;
+        }
+        $template = $this->templateLoader->GetTemplateContent("user_cart");
+        $time_template = $this->templateLoader->find_list_html('周期列表', $template);
+        foreach($pdis as $k => $v){
+        	$time_template_code = array(
+        		'name' => $v['name'],
+        		'price' => $discount * $v['price'] / 100,
+        	);
+        	$time_template_new = $time_template_new . $this->templateLoader->template_code_replace($time_template[1][0], $time_template_code);
+        }
+        $template = str_replace($time_template[0][0], $time_template_new, $template);
+        if($this->conf['random_username'] == 1){
+            $service_username = $this->formator->randomkeys(8);
+        }else{
+            $service_username = "";
+        }
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        	'product' => array(
+        		'id' => $product['id'],
+        		'name' => $product['name'],
+        		'description' => $product['description'],
+        	),
+        	'random_username' => $service_username,
+        );
+        echo $this->templateLoader->SetTemplate('user_cart', $template_code, $template);
+    }
+    
+    public function AddWorkOrder(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if(!empty($_POST['title']) && !empty($_POST['content'])){
+            $postparams = $this->security->daddslashes($_POST);
+        	$this->DB->exec("INSERT INTO `ytidc_worder`(`title`, `user`, `status`) VALUES ('{$postparams['title']}','{$user['id']}','待回复')");
+        	$newid = $this->DB->lastInsertId();
+          	$time = date('Y-m-d H:i:s');
+        	$this->DB->exec("INSERT INTO `ytidc_wreply`(`person`, `content`, `worder`, `time`) VALUES ('{$user['username']}','{$postparams['content']}','{$newid}','{$time}')");
+        	@header("Location: /index.php?p=user&m=Msg&msg=提交成功！请等待处理！");
+        	exit;
+        }
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_add_workorder', $template_code);
+    }
+    
+    public function Profile(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if(!empty($_POST['email'])){
+        	if(!empty($_POST['password'])){
+        		$password = md5(md5($this->security->daddslashes($_POST['password'])));
+        	}else{
+        		$password = $user['password'];
+        	}
+        	$email = $this->security->daddslashes($_POST['email']);
+        	$this->DB->exec("UPDATE `ytidc_user` SET `password`='{$password}', `email`='{$email}' WHERE `username`='{$user['username']}'");
+        	@header("Location: /index.php?p=user&m=Msg&msg=更新资料成功！");
+        	exit;
+        }
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_profile', $template_code);
+    }
+    
+    public function Invite(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        $template = $this->templateLoader->GetTemplateContent("user_invite");
+        if(!$template){
+            return false;
+        }
+        $invite_template = $this->templateLoader->find_list_html("邀请列表", $template);
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_user` WHERE `invite`='{$user['id']}'") as $row){
+        	$invite_template_code = array(
+        		'id' => $row['id'],
+        		'username' => $row['username'],
+        	);
+        	$invite_template_new = $invite_template_new . $this->templateLoader->template_code_replace($invite_template[1][0], $invite_template_code);
+        }
+        $template = str_replace($invite_template[0][0], $invite_template_new, $template);
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'invite_link' => "http://".$_SERVER['HTTP_HOST']."/index.php?p=user&m=Register&code=".$user['id'],
+        	'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_invite', $template_code, $template);
+    }
+    
+    public function Pay(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        $template = $this->templateLoader->GetTemplateContent("user_pay");
+        if(!$template){
+            return false;
+        }
+        $gateway_template = $this->templateLoader->find_list_html("支付通道列表", $template);
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_gateway` WHERE `status`='1'") as $row){
+        	$gateway_template_code = array(
+        		'gateway' => $row['id'],
+        		'name' => $row['name'],
+        		'fee' => $row['fee'],
+        	);
+        	$gateway_template_new = $gateway_template_new . $this->templateLoader->template_code_replace($gateway_template[1][0], $gateway_template_code);
+        }
+        $template = str_replace($gateway_template[0][0], $gateway_template_new, $template);
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_pay', $template_code, $template);
+    }
+    
+    public function SubSite(){
+        if(!$this->user->isLogin()){
+            @header("Location: /index.php?p=user&m=Login");
+            exit;
+        }else{
+            $user = $this->user->GetUserInfo();
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_fenzhan` WHERE `user`='{$user['id']}'") >= 1){
+            @header("Location: /index.php?p=user&m=Msg&msg=您已开通分站，请不要再次开通！");
+        	exit;
+        }
+        if(!empty($_POST['domain']) && !empty($_POST['title'])){
+          	$domain = $this->security->daddslashes($_POST['domain']) . '.' . $conf['sitedomain'];
+          	$title = $this->security->daddslashes($_POST['title']);
+          	$admin = $this->security->daddslashes($_POST['admin']);
+          	$password = $this->security->daddslashes($_POST['password']);
+          	$description = $this->security->daddslashes($_POST['description']);
+          	$new_money = $user['money'] - $this->conf['siteprice'];
+          	if($new_money < 0){
+              	@header("Location: /index.php?p=user&m=Msg&msg=余额不足");
+              	exit;
+            }else{
+            	$orderid = date('YmdHis').rand(1000, 99999);
+            	$this->DB->exec("INSERT INTO `ytidc_order`(`orderid`, `description`, `money`, `action`, `user`, `status`) VALUES ('{$orderid}','开通分站','{$conf['siteprice']}','扣款','{$user['id']}','已完成')");
+            }
+          	$DB->exec("UPDATE `ytidc_user` SET `money`='{$new_money}' WHERE `username`='{$user['username']}'");
+          	$DB->exec("INSERT INTO `ytidc_subsite`(`domain`, `title`, `subtitle`, `description`, `keywords`, `notice`, `user`, `status`) VALUES ('{$domain}','{$title}','企业级云服务器','{$description}','','{$conf['notice']}','{$user['id']}','1')");
+        	@header("Location: ./msg.php?msg=开通成功！");
+          	exit;
+        }
+        $template_code = array(
+        	'site' => $this->site,
+        	'config' => $this->conf,
+        	'template_file_path' => '/templates/'.$this->template,
+        	'user' => $user,
+        );
+        echo $this->templateLoader->SetTemplate('user_subsite', $template_code, $template);
     }
     
     public function isMobile(){
