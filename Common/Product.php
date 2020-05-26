@@ -5,7 +5,7 @@ namespace YunTaIDC\Product;
 use YunTaIDC\Database\Database;
 use YunTaIDC\Security\Security;
 use YunTaIDC\Server\Server;
-use YunTaIDC\Function\Function;
+use YunTaIDC\Functions\Functions;
 
 class Product{
     
@@ -39,7 +39,7 @@ class Product{
     }
     
     public function GetProductPeriod(){
-        $function = new Function();
+        $function = new Functions();
         return json_decode($function->url_decode($this->product['period']));
     }
     
@@ -69,54 +69,54 @@ class Product{
     
     public function SetProductName($name){
         $name = $this->security->daddslashes($name);
-        return $this->database->exec("UPDATE `ytidc_product` SET `name`='{$name}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `name`='{$name}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductDescription($description){
         $description = $this->security->daddslashes($description);
-        return $this->database->exec("UPDATE `ytidc_product` SET `description`='{$description}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `description`='{$description}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductType($type){
         $type = $this->security->daddslashes($type);
-        return $this->database->exec("UPDATE `ytidc_product` SET `type`='{$type}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `type`='{$type}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductServer($server){
         $server = $this->security->daddslashes($server);
-        return $this->database->exec("UPDATE `ytidc_product` SET `server`='{$server}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `server`='{$server}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductPeriod($period){
-        $function = new Function();
+        $function = new Functions();
         $period = $this->security->daddslashes($period);
         $period = json_encode($function->url_encode($period));
-        return $this->database->exec("UPDATE `ytidc_product` SET `period`='{$period}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `period`='{$period}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductLimit($limit){
         $limit = $this->security->daddslashes($limit);
-        return $this->database->exec("UPDATE `ytidc_product` SET `limit`='{$limit}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `limit`='{$limit}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductConfigoption($configoption){
         $configoption = json_encode($this->security->daddslashes($configoption));
-        return $this->database->exec("UPDATE `ytidc_product` SET `configoption`='{$configoption}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `configoption`='{$configoption}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductWeight($weight){
         $weight = $this->security->daddslashes($weight);
-        return $this->database->exec("UPDATE `ytidc_product` SET `weight`='{$weight}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `weight`='{$weight}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductHidden($hidden){
         $hidden = $this->security->daddslashes($hidden);
-        return $this->database->exec("UPDATE `ytidc_product` SET `hidden`='{$hidden}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `hidden`='{$hidden}' WHERE `id`='{$this->product['id']}'");
     }
     
     public function SetProductStatus($status){
         $status = $this->security->daddslashes($status);
-        return $this->database->exec("UPDATE `ytidc_product` SET `status`='{$status}' WHERE `id`='{$this->product['id]}'");
+        return $this->database->exec("UPDATE `ytidc_product` SET `status`='{$status}' WHERE `id`='{$this->product['id']}'");
     }
     
 }
