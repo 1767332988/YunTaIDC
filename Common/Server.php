@@ -14,6 +14,15 @@ class Server{
     public function __construct($id){
         $this->database = new Database();
         $this->security = new security();
+        if(!empty($id)){
+            $this->server = $this->database->get_row("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'");
+            if(!$this->server){
+                return false;
+            }
+        }
+    }
+    
+    public function GetServerById($id){
         $this->server = $this->database->get_row("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'");
         if(!$this->server){
             return false;
@@ -121,6 +130,19 @@ class Server{
     public function SetServerDns2($dns){
         $dns = $this->security->daddslashes($dns);
         return $this->database->exec("UPDATE `ytidc_server` SET `serverdns2`='{$dns}' WHERE `id`='{$this->server['id']}'");
+    }
+    
+    public function LoadServerPlugin(){
+        if(empty($this->server)){
+            return false;
+        }else{
+            $plugin = $this->server['plugin'];
+            if(include_once(ROOT.'/plugins/server/'.$plugin.'/'.$plugin.'.php')){
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
     
 }

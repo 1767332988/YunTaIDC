@@ -25,7 +25,7 @@ class Functions{
     }
     
     public function randomkeys($length)   {   
-        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';  
+        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ-_';  
         $key = "";
         for($i=0;$i<$length;$i++)   
         {   

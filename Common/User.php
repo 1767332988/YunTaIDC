@@ -18,7 +18,7 @@ class User{
         $this->user = $user;
     }
     
-    public function Login($username, $password){
+    public function GetUserByUsernameLogin($username, $password){
         $functioner = new Functions();
         $password = md5(md5($password));
         $ip = $functioner->getRealIp();
@@ -32,6 +32,23 @@ class User{
         }else{
         	return false;
         }
+    }
+    
+    public function GetUserById($id){
+        $this->user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'");
+    }
+    
+    public function GetUserBySessionLogin(){
+        $security = new Security();
+        $functioner = new Functions();
+        $user = $security->daddslashes($_SESSION['yuntauser']);
+    	$user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'");
+    	if($user['lastip'] == $functioner->getRealIp() && $_SESSION['userip'] == $functioner->getRealIp()){
+    	    $this->user = $user;
+    		return true;
+    	}else{
+    	    return false;
+    	}
     }
     
     public function isLogin(){

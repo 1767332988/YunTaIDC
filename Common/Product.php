@@ -16,6 +16,15 @@ class Product{
     public function __construct($id){
         $this->database = new Database();
         $this->security = new Security();
+        if(!empty($id)){
+            $this->product = $this->database->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'");
+            if(!$this->product){
+                return false;
+            }
+        }
+    }
+    
+    public function GetProductById($id){
         $this->product = $this->database->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'");
         if(!$this->product){
             return false;
