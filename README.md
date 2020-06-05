@@ -1,6 +1,6 @@
 # YunTaIDC
 云塔IDC系统【中文】【Chinese】  
-![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.3.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.5.00/cyan)![Status](https://badgen.net/badge/Status/Failure/red)  
+![Apache-License-2.0](https://badgen.net/badge/License/GPL-3.0/purple)![PHP](https://badgen.net/badge/PHP/7.4.0/orange)![Verison](https://badgen.net/badge/Verison/V0.2.5.00/cyan)![Status](https://badgen.net/badge/Status/Failure/red)  
 作者QQ：2119566807  
 作者TG：@kitrosmc  
 交流QQ群：954152892  
@@ -28,5 +28,12 @@
 - 开放模板系统
 - 开放API系统
 ## 最新更新(v.2.5/3.0)：
+- 新增随机密码选项
+- 新增更多云塔中心服务
+- 增加一种服务状态
+- 更新服务器插件系统
+- 更新支付插件系统
 - 更新功能插件系统
+- 更新API操作系统
+- 删除内嵌邮件到期提醒功能
 - 修复多个2.4版本的bugs

@@ -14,6 +14,10 @@ require_once(ROOT."/Common/Database.php");
 require_once(ROOT."/Common/Product.php");
 //require_once(ROOT."/Common/Service.php");
 require_once(ROOT."/Common/Server.php");
+require_once(ROOT."/Common/Plugin/PluginLoader.php");
+require_once(ROOT."/Common/Plugin/PluginInstaller.php");
+require_once(ROOT."/Common/Plugin/PluginBase.php");
+
 use YunTaIDC\System\System;
 
 $system = new System();

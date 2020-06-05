@@ -16,7 +16,11 @@ class System{
     public $conf;
     public $site;
     
-    public function LoadSystem(){
+    public function getVersion(){
+        return '3.0.0';
+    }
+    
+    private function LoadSystem(){
         //$this->PluginLoader = new PluginLoader();
         //$this->PluginLoader->LoadAllPlugin();
         //$this->status = "success";
@@ -42,7 +46,7 @@ class System{
         }
     }
     
-    public function LoadConfig(){
+    private function LoadConfig(){
         $conf = array();
         $DB = $this->DB;
         foreach($DB->get_rows("SELECT * FROM `ytidc_config`") as $row){
@@ -52,7 +56,7 @@ class System{
         return true;
     }
     
-    public function LoadSite(){
+    private function LoadSite(){
         $domain = $_SERVER['HTTP_HOST'];
         if($this->DB->num_rows("SELECT * FROM `ytidc_subsite` WHERE `domain`='{$domain}'") != 1){
             $this->site = array(
@@ -75,7 +79,7 @@ class System{
         }
     }
     
-    public function LoadPages($params){
+    private function LoadPages($params){
         if(empty($params['p']) || empty($params['m'])){
             $p = "index";
             $m = "index";

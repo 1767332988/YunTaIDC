@@ -8,6 +8,8 @@ use YunTaIDC\Security\Security;
 use YunTaIDC\System\System;
 use YunTaIDC\Server\Server;
 use YunTaIDC\Product\Product;
+use YunTaIDC\Plugin\PluginLoader;
+use YunTaIDC\Plugin\PluginBase;
 
 class Service{
     
@@ -94,11 +96,6 @@ class Service{
         if(empty($dis)){
             return false;
         }
-        if(!$this->server->LoadServerPlugin()){
-            return false;
-        }else{
-            return true;
-        }
         $plugin = $this->server->GetServerPlugin();
         $configoption = $this->product->GetProductConfigOption();
         $postdata = array(
@@ -110,9 +107,63 @@ class Service{
             'product' => $this->product,
             'server' => $this->server,
         );
-        $function = $plugin.'_CreateService';
-        $return = $function($postdata);
-        return $return;
+        $pluginloader = new PluginLoader();
+        $plugin = $pluginloader->LoadPlugin($plugin);
+        if(!method_exists("CreateService", $plugin)){
+            return array(
+                'status' => 'fail',
+                'msg' => '插件并没有任何开通功能！',
+            );
+        }else{
+            return $plugin->CreateService($postdata);
+        }
+    }
+    
+    public function RenewService($period){
+        $this->GetServiceProduct();
+        $this->GetServiceServer();
+        $productperiod = $this->product->GetProductPeriod();
+        foreach($productperiod as $k => $v){
+            if($v['id'] == $period){
+                $dis = array(
+        			'name' => $v['name'],
+        			'price' => $v['price'],
+        			'day' => $v['day'],
+        			'remark' => $v['remark'],
+        			'renew' => $v['renew'],
+        		);
+            }
+        }
+        if(empty($dis)){
+            return false;
+        }
+        if($dis['renew'] != 1){
+            return array(
+                'status' => 'fail',
+                'msg' => '周期不允许续费!',
+            );
+        }
+        $plugin = $this->server->GetServerPlugin();
+        $configoption = $this->product->GetProductConfigOption();
+        $postdata = array(
+            'data' => array(
+                'id' => $id,
+                'period' => $dis,
+            ),
+            'service' => $this->service,
+            'product' => $this->product,
+            'server' => $this->server,
+        );
+        $pluginloader = new PluginLoader();
+        $plugin = $pluginloader->LoadPlugin($plugin);
+        if(!method_exists("RenewService", $plugin)){
+            return array(
+                'status' => 'fail',
+                'msg' => '插件并没有任何开通功能！',
+            );
+        }else{
+            return $plugin->RenewService($postdata);
+        }
     }
     
 }

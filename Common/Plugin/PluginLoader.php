@@ -23,6 +23,7 @@ class PluginLoader{
         $pluginconfig = json_decode($plugindata['config'], true);
         $PluginFile = $this->PluginFilePath . '/' . $plugin . '/' . $plugin . '.php';
         require_once($PluginFile);
+        $pluginclass = '\YunTaIDC\Plugin\\'.$plugin;
         $pluginclass = new $plugin();
         if(method_exists($pluginclass, 'onLoad')){
             $pluginclass->onLoad($pluginconfig);
