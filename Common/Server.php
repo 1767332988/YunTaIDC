@@ -132,19 +132,6 @@ class Server{
         return $this->database->exec("UPDATE `ytidc_server` SET `serverdns2`='{$dns}' WHERE `id`='{$this->server['id']}'");
     }
     
-    public function LoadServerPlugin(){
-        if(empty($this->server)){
-            return false;
-        }else{
-            $plugin = $this->server['plugin'];
-            if(include_once(ROOT.'/plugins/server/'.$plugin.'/'.$plugin.'.php')){
-                return true;
-            }else{
-                return false;
-            }
-        }
-    }
-    
 }
 
 ?>

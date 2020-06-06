@@ -35,6 +35,20 @@ class Security{
         }
     }
     
+    public function Input($type = 'GET'){
+        switch ($type) {
+            case 'GET':
+                return $this->daddslashes($_GET);
+                break;
+            case 'POST':
+                return $this->daddslashes($_POST);
+                break;
+            default:
+                return $this->daddslashes($_GET);
+                break;
+        }
+    }
+    
     public function daddslashes($string, $strip = FALSE){
     	if(is_array($string)) {
     		foreach($string as $key => $val) {

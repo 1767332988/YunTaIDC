@@ -28,6 +28,7 @@ class User{
         	$this->DB->exec("UPDATE `ytidc_user` SET `lastip`='{$ip}' WHERE `username`='{$username}'");
         	$_SESSION['yuntauser'] = $username;
         	$_SESSION['userip'] = $ip;
+        	$this->Logined = true;
         	return true;
         }else{
         	return false;
@@ -45,6 +46,7 @@ class User{
     	$user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'");
     	if($user['lastip'] == $functioner->getRealIp() && $_SESSION['userip'] == $functioner->getRealIp()){
     	    $this->user = $user;
+        	$this->Logined = true;
     		return true;
     	}else{
     	    return false;
@@ -52,31 +54,15 @@ class User{
     }
     
     public function isLogin(){
-        $security = new Security();
-        $functioner = new Functions();
-        $user = $security->daddslashes($_SESSION['yuntauser']);
-    	$user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'");
-    	if($user['lastip'] == $functioner->getRealIp() && $_SESSION['userip'] == $functioner->getRealIp()){
-    	    $this->user = $user;
-    		return true;
-    	}else{
-    	    return false;
-    	}
+        return $this->Logined;
     }
     
     public function GetUserInfo(){
         return $this->user;
     }
     
-    public function AddMoney($money){
-        $DB = $this->DB;
-        $user = $this->user;
-        $final_money = $user['money'] + $money;
-        if($DB->exec("UPDATE `ytidc_user` SET `money`='{$final_money}' WHERE `id`='{$user['id']}'")){
-            return true;
-        }else{
-            return false;
-        }
+    public function GetUserId(){
+        return $this->user['id'];
     }
     
     public function GetEmail(){
@@ -113,6 +99,13 @@ class User{
         $user = $this->user;
         //return User($user['invite'], $this->DB);
         return $user['invite'];
+    }
+    
+    public function SetUserInfo($params){
+        foreach($params as $k => $v){
+            $this->DB->exec("UPDATE `ytidc_user` SET `{$k}`='{$v}' WHERE `id`='{$this->user['id']}'");
+        }
+        return true;
     }
     
 }
