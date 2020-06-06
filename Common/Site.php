@@ -10,12 +10,14 @@ class Site{
     var $site;
     var $DB;
     
-    public function __construct($id){
+    public function __construct($id = null){
         $this->DB = new Database();
-        if(empty($id) || $this->DB->num_rows("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'")){
-            throw new Exception("Site.php分站不存在");
-        }else{
-            $this->site = $this->DB->get_row("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'");
+        if(!is_null($id)){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'") != 1){
+                throw new Exception("Site.php子站点不存在");
+            }else{
+                $this->site = $this->DB->get_row("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'");
+            }
         }
     }
     

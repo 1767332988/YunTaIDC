@@ -15,7 +15,7 @@ class Order{
         $this->DB = new Database();
         $this->user = new User();
         if(!is_null($id)){
-            if($this->DB->num_rows("SELECT * FROM `ytidc_order` WHERE `id`='{$id}'")){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_order` WHERE `id`='{$id}'") != 1){
                 throw new Exception("Order.php订单不存在");
             }else{
                 $this->order = $this->DB->get_row("SELECT * FROM `ytidc_order` WHERE `id`='{$id}'");

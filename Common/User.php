@@ -72,7 +72,6 @@ class User{
         foreach($params as $k => $v){
             $this->DB->exec("UPDATE `ytidc_user` SET `{$k}`='{$v}' WHERE `id`='{$this->user['id']}'");
         }
-        return true;
     }
     
 }

@@ -18,7 +18,7 @@ class Workorder{
         $this->security = new Security();
         $this->user = $user;
         if(!is_null($id)){
-            if($this->DB->num_rows("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'")){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'") != 1){
                 throw new Exception("User.php用户不存在");
             }else{
                 $this->workorder = $this->DB->get_row("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'");
@@ -33,7 +33,7 @@ class Workorder{
             if(!$this->DB->exec("INSERT INTO `ytidc_workorder`(`title`, `user`, `status`) VALUES ('{$params['title']}','{$this->user->GetUserId()}','待回复')")){
                 return false;
             }else{
-                $newid = $this->DB->LastInsertId();
+                $newid = $this->DB->lastInsertId();
                 $time = date('Y-m-d H:i:s');
                 if(!$this->DB->exec("INSERT INTO `ytidc_workorder_chat` (`person`, `content`, `workorder`, `time`) VALUES ('{$this->user->GetUserUsername()}','{params['content]}','{$newid}','{$time}')")){
                     return false;
