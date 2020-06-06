@@ -14,67 +14,11 @@ class Server{
     public function __construct($id){
         $this->database = new Database();
         $this->security = new security();
-        if(!empty($id)){
-            $this->server = $this->database->get_row("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'");
-            if(!$this->server){
-                return false;
-            }
+        if(empty($id) || $this->DB->num_rows("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'")){
+            throw new Exception("Server.php服务器不存在");
+        }else{
+            $this->server = $this->DB->get_row("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'");
         }
-    }
-    
-    public function GetServerById($id){
-        $this->server = $this->database->get_row("SELECT * FROM `ytidc_server` WHERE `id`='{$id}'");
-        if(!$this->server){
-            return false;
-        }
-    }
-    
-    public function GetServerIp(){
-        return $this->server['serverip'];
-    }
-    
-    public function GetServerDomain(){
-        return $this->server['serverdoamin'];
-    }
-    
-    public function GetServerDns1(){
-        return $this->server['serverdns1'];
-    }
-    
-    public function GetServerDns2(){
-        return $this->server['serverdns2'];
-    }
-    
-    public function GetServerUsername(){
-        return $this->server['serverusername'];
-    }
-    
-    public function GetServerPassword(){
-        return $this->server['serverpassword'];
-    }
-    
-    public function GetServerAccessHash(){
-        return $this->server['serveraccesshash'];
-    }
-    
-    public function GetServerPort(){
-        return $this->server['serverport'];
-    }
-    
-    public function GetServerPlugin(){
-        return $this->server['plugin'];
-    }
-    
-    public function GetServerName(){
-        return $this->server['name'];
-    }
-    
-    public function GetServerCpanel(){
-        return $this->server['servercpanel'];
-    }
-    
-    public function GetServerStatus(){
-        return $this->server['status'];
     }
     
     public function SetServerIp($ip){

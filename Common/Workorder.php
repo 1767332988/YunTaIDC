@@ -11,11 +11,19 @@ class Workorder{
     var $user;
     var $DB;
     var $security;
+    var $workorder;
     
-    public function __construct($user){
+    public function __construct($user, $id = null){
         $this->DB = new Database();
         $this->security = new Security();
         $this->user = $user;
+        if(!is_null($id)){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'")){
+                throw new Exception("User.php用户不存在");
+            }else{
+                $this->workorder = $this->DB->get_row("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'");
+            }
+        }
     }
     
     public function Add($params){
@@ -53,21 +61,12 @@ class Workorder{
         }
     }
     
-    public function GetReply($id){
+    public function GetReply(){
         $replylist = array();
-        foreach ($this->DB->get_rows("SELECT * FROM `ytidc_workorder_chat` WHERE `workorder`='{$id}'") as $row){
+        foreach ($this->DB->get_rows("SELECT * FROM `ytidc_workorder_chat` WHERE `workorder`='{$this->workorder['id']}'") as $row){
             $replylist[] = $row;
         }
         return $replylist;
-    }
-    
-    public function GetStatus($id){
-        $worder = $this->DB->get_row("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'");
-        if(empty($worder)){
-            return false;
-        }else{
-            return $worder['status'];
-        }
     }
     
     public function AdminReply($params){
@@ -87,8 +86,8 @@ class Workorder{
         }
     }
     
-    public function SetStatus($status, $id){
-        return $this->DB->exec("UPDATE `ytidc_workorder` SET `status`='{$status}' WHERE `id`='{$id}'");
+    public function SetStatus($status){
+        return $this->DB->exec("UPDATE `ytidc_workorder` SET `status`='{$status}' WHERE `id`='{$this->workorder['id']}'");
     }
     
 }

@@ -12,10 +12,15 @@ class User{
     private $DB;
     private $Logined = false;
     
-    public function __construct($userid = "", $DB){
-        $this->DB = $DB;
-        $user = $DB->get_row("SELECT * FROM `ytidc_user` WHERE `id`='{$userid}'");
-        $this->user = $user;
+    public function __construct($id = null){
+        $this->DB = new Database();
+        if(!is_null($id)){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'")){
+                throw new Exception("User.php用户不存在");
+            }else{
+                $this->user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'");
+            }
+        }
     }
     
     public function GetUserByUsernameLogin($username, $password){
@@ -33,10 +38,6 @@ class User{
         }else{
         	return false;
         }
-    }
-    
-    public function GetUserById($id){
-        $this->user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'");
     }
     
     public function GetUserBySessionLogin(){
@@ -57,29 +58,6 @@ class User{
         return $this->Logined;
     }
     
-    public function GetUserInfo(){
-        return $this->user;
-    }
-    
-    public function GetUserId(){
-        return $this->user['id'];
-    }
-    
-    public function GetEmail(){
-        $user = $this->user;
-        return $user['email'];
-    }
-    
-    public function GetMoney(){
-        $user = $this->user;
-        return $user['money'];
-    }
-    
-    public function GetUsername(){
-        $user = $this->user;
-        return $user['username'];
-    }
-    
     public function ChangePassword($password){
         $user = $this->user;
         $password = md5(md5($password));
@@ -88,17 +66,6 @@ class User{
         }else{
             return false;
         }
-    }
-    
-    public function GetGradeId(){
-        $user = $this->user;
-        return $user['grade'];
-    }
-    
-    public function GetInviteUser(){
-        $user = $this->user;
-        //return User($user['invite'], $this->DB);
-        return $user['invite'];
     }
     
     public function SetUserInfo($params){

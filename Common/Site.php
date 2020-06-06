@@ -10,59 +10,13 @@ class Site{
     var $site;
     var $DB;
     
-    public function __construct(){
+    public function __construct($id){
         $this->DB = new Database();
-    }
-    
-    public function GetSiteById($id){
-        if(empty($id)){
-            return false;
+        if(empty($id) || $this->DB->num_rows("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'")){
+            throw new Exception("Site.php分站不存在");
+        }else{
+            $this->site = $this->DB->get_row("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'");
         }
-        $this->site = $this->DB->get_row("SELECT * FROM `ytidc_subsite` WHERE `id`='{$id}'");
-    }
-    
-    public function GetSiteConf(){
-        return $this->site;
-    }
-    
-    public function GetSiteTitle(){
-        return $this->site['title'];
-    }
-    
-    public function GetSiteSubtitle(){
-        return $this->site['subtitle'];
-    }
-    
-    public function GetSiteDomain(){
-        return $this->site['domain'];
-    }
-    
-    public function GetSiteUser(){
-        return $this->site['user'];
-    }
-    
-    public function GetSiteStatus(){
-        return $this->site['status'];
-    }
-    
-    public function GetSiteDescrption(){
-        return $this->site['description'];
-    }
-    
-    public function GetSiteKeywords(){
-        return $this->site['keywords'];
-    }
-    
-    public function GetSiteNotice(){
-        return $this->site['notice'];
-    }
-    
-    public function GetSiteId(){
-        return $this->site['id'];
-    }
-    
-    public function GetSiteInvitePercent(){
-        return $this->site['invitepercent'];
     }
     
     public function SetSiteTitle($title){

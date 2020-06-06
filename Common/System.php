@@ -98,6 +98,217 @@ class System{
         }
     }
     
+    public function GetConfig(){
+        return $this->conf;
+    }
+    
+    public function GetAllType(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_type`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllUser(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_user`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllServer(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_server`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllProduct(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_product`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllPriceSet(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_priceset`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllWorkorder(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_workorder`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllSubsite(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_subsite`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllPromocode(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_promocode`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllPlugin(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_plugin`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllAdmin(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_admin`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllNotice(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllOrder(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_order`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetAllService(){
+        $rows = array();
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_service`") as $row){
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    
+    public function GetType($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_type` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetUser($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetServer($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_server` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetProduct($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetPriceset($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_priceset` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetWorkorder($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_workorder` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetSubsite($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_subsite` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetPromocode($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_promocode` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetPlugin($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_plugin` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetAdmin($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_admin` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetNotice($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_notice` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetOrder($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_order` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
+    
+    public function GetService($params){
+        $rows = array();
+        foreach($params as $k => $v){
+            $rows = $this->DB->get_row("SELECT * FROM `ytidc_service` WHERE `{$k}`='{$v}'");
+        }
+        return $rows;
+    }
 }
 
 ?>

@@ -16,11 +16,10 @@ class Product{
     public function __construct($id){
         $this->database = new Database();
         $this->security = new Security();
-        if(!empty($id)){
-            $this->product = $this->database->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'");
-            if(!$this->product){
-                return false;
-            }
+        if(empty($id) || $this->DB->num_rows("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'")){
+            throw new Exception("Product.php产品不存在");
+        }else{
+            $this->product = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$id}'");
         }
     }
     

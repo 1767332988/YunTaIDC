@@ -11,10 +11,16 @@ class Order{
     var $DB;
     var $user;
     
-    public function __construct($user){
+    public function __construct($id = null){
         $this->DB = new Database();
         $this->user = new User();
-        $this->user->GetUserById($user);
+        if(!is_null($id)){
+            if($this->DB->num_rows("SELECT * FROM `ytidc_order` WHERE `id`='{$id}'")){
+                throw new Exception("Order.php订单不存在");
+            }else{
+                $this->order = $this->DB->get_row("SELECT * FROM `ytidc_order` WHERE `id`='{$id}'");
+            }
+        }
     }
     
     public function CreateOrder($params){
@@ -32,18 +38,6 @@ class Order{
         }else{
             return false;
         }
-    }
-    
-    public function GetOrderList(){
-        $orderarray = array();
-        foreach ($this->DB->get_rows("SELECT * FROM `ytidc_order` WHERE `user`='{$this->user->GetUserId()}'") as $row){
-            $orderarray[] = $row;
-        }
-        return $orderarray;
-    }
-    
-    public function GetOrderInfo($orderid){
-        return $this->DB->get_row("SELECT * FROM `ytidc_order` WHERE `orderid`='{$orderid}'");
     }
     
 }
