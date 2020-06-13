@@ -20,12 +20,15 @@ class System{
         return '3.0.0';
     }
     
-    private function LoadSystem(){
+    public function LoadDatabase(){
+        $this->DB = new Database();
+    }
+    
+    public function LoadSystem(){
         //$this->PluginLoader = new PluginLoader();
         //$this->PluginLoader->LoadAllPlugin();
         //$this->status = "success";
-        require_once(ROOT."/config.php");
-        $this->DB = new DataBase($dbconfig);
+        $this->LoadDatabase();
         if(!$this->DB){
             throw new Exception("数据库连接失败[Database Connection Failure]");
             return;
@@ -46,7 +49,7 @@ class System{
         }
     }
     
-    private function LoadConfig(){
+    public function LoadConfig(){
         $conf = array();
         $DB = $this->DB;
         foreach($DB->get_rows("SELECT * FROM `ytidc_config`") as $row){
@@ -56,7 +59,7 @@ class System{
         return true;
     }
     
-    private function LoadSite(){
+    public function LoadSite(){
         $domain = $_SERVER['HTTP_HOST'];
         if($this->DB->num_rows("SELECT * FROM `ytidc_subsite` WHERE `domain`='{$domain}'") != 1){
             $this->site = array(
@@ -79,7 +82,7 @@ class System{
         }
     }
     
-    private function LoadPages($params){
+    public function LoadPages($params){
         if(empty($params['p']) || empty($params['m'])){
             $p = "index";
             $m = "index";
@@ -102,106 +105,184 @@ class System{
         return $this->conf;
     }
     
-    public function GetAllType(){
+    public function GetAllType($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_type`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_type`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_type` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllUser(){
+    public function GetAllUser($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_user`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_user`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_user` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllServer(){
+    public function GetAllServer($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_server`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_server`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_server` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllProduct(){
+    public function GetAllProduct($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_product`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_product`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_product` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllPriceSet(){
+    public function GetAllPriceSet($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_priceset`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_priceset`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_priceset` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllWorkorder(){
+    public function GetAllWorkorder($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_workorder`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_workorder`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_workorder` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllSubsite(){
+    public function GetAllSubsite($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_subsite`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_subsite`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_subsite` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllPromocode(){
+    public function GetAllPromocode($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_promocode`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_promocode`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_promocode` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllPlugin(){
+    public function GetAllPlugin($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_plugin`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_plugin`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_plugin` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllAdmin(){
+    public function GetAllAdmin($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_admin`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_admin`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_admin` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllNotice(){
+    public function GetAllNotice($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllOrder(){
+    public function GetAllOrder($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_order`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_order`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_order` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }
     
-    public function GetAllService(){
+    public function GetAllService($params = array()){
         $rows = array();
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_service`") as $row){
-            $rows[] = $row;
+        if(empty($params)){
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_service`") as $row){
+                $rows[] = $row;
+            }
+        }else{
+            foreach($this->DB->get_rows("SELECT * FROM `ytidc_service` WHERE `{$params['key']}`='{$params['value']}'") as $row){
+                $rows[] = $row;
+            }
         }
         return $rows;
     }

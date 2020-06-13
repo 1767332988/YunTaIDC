@@ -74,6 +74,14 @@ class User{
         }
     }
     
+    public function Get($key= ''){
+        if(empty($key)){
+            return $this->user;
+        }else{
+            return $this->user[$key];
+        }
+    }
+    
 }
 
 ?>

@@ -4,29 +4,27 @@ namespace YunTaIDC\Workorder;
 
 use YunTaIDC\Database\Database;
 use YunTaIDC\User\User;
-use YunTaIDC\Security\Security;
+use Exception as Exception;
 
 class Workorder{
     
     var $user;
     var $DB;
-    var $security;
     var $workorder;
     
     public function __construct($user, $id = null){
         $this->DB = new Database();
-        $this->security = new Security();
         $this->user = $user;
         if(!is_null($id)){
             if($this->DB->num_rows("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'") != 1){
-                throw new Exception("User.php用户不存在");
+                throw new Exception("workorder.php工单不存在");
             }else{
                 $this->workorder = $this->DB->get_row("SELECT * FROM `ytidc_workorder` WHERE `id`='{$id}'");
             }
         }
     }
     
-    public function Add($params){
+    public function AddWorkOrder($params){
         if(empty($params['title']) || empty($params['content'])){
             return false;
         }else{
@@ -44,7 +42,7 @@ class Workorder{
         }
     }
     
-    public function Reply($params){
+    public function ReplyWorkOrder($params){
         if(empty($params['content']) || empty($params['id'])){
             return false;
         }else{

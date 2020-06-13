@@ -25,6 +25,10 @@ class Product{
         }
     }
     
+    public function GetProductInfo($id){
+        return $this->product;
+    }
+    
     public function AddProduct(){
         return $this->database->exec("INSERT INTO `ytidc_product`(`name`, `description`, `type`, `server`, `period`, `limit`, `configoption`, `weight`, `hidden`, `status`) VALUES ('新建产品','',0,0,'',0,'',0,0,1)");
     }

@@ -5,6 +5,7 @@ use YunTaIDC\Security\Security;
 use YunTaIDC\Database\Database;
 use YunTaIDC\Functions\Functions;
 use YunTaIDC\User\User;
+use YunTaIDC\System\System;
 
 class Pages{
     
@@ -15,6 +16,7 @@ class Pages{
     public $site;
     public $security;
     public $DB;
+    public $System;
     public $formator;
     public $getparams;
     private $user;
@@ -28,6 +30,9 @@ class Pages{
         $this->user = new User("", $DB);
         $this->formator = new Functions();
         $this->getparams = $getparams;
+        $this->System = new System();
+        $this->System->LoadDatabase();
+        $this->user->GetUserBySessionLogin();
         if($this->isMobile()){
             $this->template = $conf['template_mobile'];
         }else{
@@ -46,12 +51,12 @@ class Pages{
             @header("Location: /index.php?p=user&m=Login");
             exit;
         }else{
-            $user = $this->user->GetUserInfo();
+            $user = $this->user->Get();
         }
-        $servicecount = $this->DB->num_rows("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'");
-        $wordercount = $this->DB->num_rows("SELECT * FROM `ytidc_worder` WHERE `user`='{$user['id']}'");
-        $invitecount = $this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `invite`='{$user['id']}'");
-        $noticecount = $this->DB->num_rows("SELECT * FROM `ytidc_notice`");
+        $servicecount = count($this->System->GetAllService(array('key'=>'userid','value'=>$user['id'])));
+        $wordercount = count($this->System->GetAllWorkorder(array('key'=>'user','value'=>$user['id'])));
+        $invitecount = count($this->System->GetAllUser(array('key'=>'invite','value'=>$user['id'])));
+        $noticecount = count($this->System->GetAllNotice(array('key'=>'site','value'=>'0'))) + count($this->System->GetAllNotice(array('key'=>'site','value'=>$site['id'])));
         $template_code = array(
         	'site' => $this->site,
         	'config' => $this->conf,
@@ -73,12 +78,12 @@ class Pages{
             exit;
         }
         if(!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['authcode'])){
-            $params = $this->security->daddslashes($_POST);
+            $params = $this->security->Input('POST');
             if($params['authcode'] != $_SESSION['authcode']){
                 @header("Location: /index.php?p=user&m=msg&msg=验证码错误&to=/index/user/Login/");
                 exit;
             }
-            if($this->user->Login($params['username'], $params['password'])){
+            if($this->user->GetUserByUsernameLogin($params['username'], $params['password'])){
                 @header("Location: /index.php?p=user&m=Index");
                 exit;
             }else{
@@ -101,14 +106,14 @@ class Pages{
             @header("Location: /index.php?p=user&m=Login");
             exit;
         }else{
-            $user = $this->user->GetUserInfo();
+            $user = $this->user->Get();
         }
         $template = $this->templateLoader->GetTemplateContent("user_notice");
         if(!$template){
             return false;
         }
         $notice_template = $this->templateLoader->find_list_html("公告列表", $template);
-        foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='0'") as $row){
+        foreach($this->System->GetAllNotice(array('key'=>'site','value'=>'0')) as $row){
     		$notice_template_code = array(
     			'id' => $row['id'],
     			'title' => $row['title'],
@@ -116,7 +121,7 @@ class Pages{
         	$notice_template_new = $notice_template_new . $this->templateLoader->template_code_replace($notice_template[1][0], $notice_template_code);
         }
         if($this->site['id'] != 0){
-        	foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='{$this->site['id']}'") as $row){
+        	foreach($this->System->GetAllNotice(array('key'=>'site','value'=>'0')) as $row){
         		$notice_template_code = array(
         			'id' => $row['id'],
         			'title' => $row['title'],

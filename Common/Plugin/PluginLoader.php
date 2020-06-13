@@ -31,28 +31,6 @@ class PluginLoader{
         return $pluginclass;
     }
     
-    public function LoadInstaller($plugin){
-        $InstallerFile = $this->PluginFilePath . '/' . $plugin . '/installer.php';
-        if(!file_exists($InstallerFile)){
-            throw new Exception("云塔提醒你：插件安装器不存在，请不要重复安装！");
-            exit;
-        }
-        require_once($InstallerFile);
-        $installer = $plugin();
-        if(method_exists($installer, 'Install')){
-            if($installer->Install() == true){
-                throw new Exception("云塔提醒您：插件安装失败，返回信息" . $installer->error_msg);
-                exit;
-            }
-        }
-        if(unlink($InstallerFile)){
-            return true;
-        }else{
-            throw new Exception("云塔提醒您：插件安装成功，删除安装器失败，请手动删除避免不必要的损失！");
-            exit;
-        }
-    }
-    
 }
 
 ?>

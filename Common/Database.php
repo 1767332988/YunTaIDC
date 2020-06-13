@@ -7,10 +7,10 @@ class Database{
     
     private $DB;
     
-    public function __construct($params){
-        $dsn = $params['type'].':dbname='.$params['name'].';host='.$params['host'];
-        $user = $params['user'];
-        $password = $params['pass'];
+    public function __construct(){
+        $dsn = DBCONFIG['type'].':dbname='.DBCONFIG['name'].';host='.DBCONFIG['host'];
+        $user = DBCONFIG['user'];
+        $password = DBCONFIG['pass'];
         try {
             $dbh = new PDO($dsn, $user, $password);
             $this->DB = $dbh;

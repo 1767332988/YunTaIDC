@@ -21,40 +21,72 @@ class Site{
         }
     }
     
+    public function GetSiteInfo(){
+        return $this->site;
+    }
+    
     public function SetSiteTitle($title){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `title`='{$title}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `title`='{$title}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteSubtitle($subtitle){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `subtitle`='{$subtitle}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `subtitle`='{$subtitle}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteDomain($domain){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `domain`='{$domain}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `domain`='{$domain}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteUser($user){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `user`='{$user}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `user`='{$user}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteDescription($description){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `description`='{$description}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `description`='{$description}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteKeywords($keywords){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `keywords`='{$keywords}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `keywords`='{$keywords}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteStatus($status){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `status`='{$status}' WHERE `id`='{$this->site['id']}'");
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `status`='{$status}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function SetSiteNotice($notice){
-        return $this->DB->exec("UPDATE `ytidc_subsite` SEt `notice`='{$notice}' WHERE `id`='{$this->site['id']}'");
-    }
-    
-    public function GetSiteDomainList($conf){
-        return json_decode($conf['subsitedomain']);
+        if(empty($this->site)){
+            return false;
+        }else{
+            return $this->DB->exec("UPDATE `ytidc_subsite` SEt `notice`='{$notice}' WHERE `id`='{$this->site['id']}'");
+        }
     }
     
     public function AddSite($params){
