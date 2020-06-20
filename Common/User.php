@@ -58,28 +58,73 @@ class User{
         return $this->Logined;
     }
     
-    public function ChangePassword($password){
-        $user = $this->user;
-        $password = md5(md5($password));
-        if($DB->exec("UPDATE `ytidc_user` SET `password`='{$password}' WHERE `id`='{$user['id']}'")){
-            return true;
-        }else{
+    public function SetUserUsername($username){
+        if(empty($this->user)){
             return false;
-        }
-    }
-    
-    public function SetUserInfo($params){
-        foreach($params as $k => $v){
-            $this->DB->exec("UPDATE `ytidc_user` SET `{$k}`='{$v}' WHERE `id`='{$this->user['id']}'");
-        }
-    }
-    
-    public function Get($key= ''){
-        if(empty($key)){
-            return $this->user;
         }else{
-            return $this->user[$key];
+            return $this->database->exec("UPDATE `ytidc_user` SET `username`='{$username}' WHERE `id`='{$this->user['id']}'");
         }
+    }
+    
+    public function SetUserPassword($password){
+        $password = md5(md5($password));
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `password`='{$password}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserEmail($email){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `email`='{$email}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserMoney($money){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `money`='{$money}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserPriceset($priceset){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `priceset`='{$priceset}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserInvite($invite){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `invite`='{$invite}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserSite($site){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `site`='{$site}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function SetUserStatus($status){
+        if(empty($this->user)){
+            return false;
+        }else{
+            return $this->database->exec("UPDATE `ytidc_user` SET `status`='{$status}' WHERE `id`='{$this->user['id']}'");
+        }
+    }
+    
+    public function GetUserInfo(){
+        return $this->user;
     }
     
 }

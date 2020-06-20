@@ -4,7 +4,7 @@ namespace YunTaIDC\System;
 //require_once(ROOT."/Common/Plugin/PluginLoader.php");
 use YunTaIDC\Database\Database;
 //use Plugin\Plugin\PluginLoader;
-use YunTaIDC\Security\Security;
+use YunTaIDC\Input\Input;
 use YunTaIDC\Template\Template;
 use Exception as Exception;
 use Pages as Pages;
@@ -41,8 +41,8 @@ class System{
             throw new Exception("站点配置加载失败[Site Configuration Load Failure]");
             return;
         }
-        $security = new Security();
-        $getparams = $security->daddslashes($_GET);
+        $Input = new Input();
+        $getparams = $Input->daddslashes($_GET);
         if(!$this->LoadPages($getparams)){
             throw new Exception("页面加载失败[LoadPages Failure]");
             return;
@@ -94,7 +94,7 @@ class System{
             return false;
         }
         require_once(ROOT."/Common/Pages/".$p.'.php');
-        if(new Pages($m, $this->conf, $this->site, $this->DB, $params)){
+        if(new Pages($m, $this->conf, $this->site, $this->DB)){
             return true;
         }else{
             return false;

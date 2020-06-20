@@ -21,6 +21,10 @@ class Server{
         }
     }
     
+    public function GetServerInfo(){
+        return $this->server;
+    }
+    
     public function AddServer(){
         return $this->database->exec("INSERT INTO `ytidc_server`(`name`, `serverip`, `serverdomain`, `serverdns1`, `serverdns2`, `serverusername`, `serverpassword`, `serveraccesshash`, `servercpanel`, `serverport`, `plugin`, `status`) VALUES ('新建服务器','','','','','','','','',80,'',1)");
     }
