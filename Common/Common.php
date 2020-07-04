@@ -9,7 +9,7 @@ require_once(ROOT.'config.php');
 define("DBCONFIG", $dbconfig);
 require_once(ROOT."/Common/System.php");
 require_once(ROOT."/Common/Template.php");
-require_once(ROOT."/Common/Security.php");
+require_once(ROOT."/Common/Input.php");
 require_once(ROOT."/Common/Functions.php");
 require_once(ROOT."/Common/User.php");
 require_once(ROOT."/Common/Database.php");

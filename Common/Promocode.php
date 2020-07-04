@@ -18,7 +18,14 @@ class Promocode{
                 $this->promocode = $this->DB->get_row("SELECT * FROM `ytidc_promocode` WHERE `id`='{$id}'");
             }
         }
-        
+    }
+    
+    public function GetPromoCodeByCode($code){
+        if(empty($code)){
+            return false;
+        }else{
+            return $this->DB->get_row("SELECT * FROM `ytidc_promocode` WHERE `code`='{$code}'");
+        }
     }
     
     public function AddPromoCode(){

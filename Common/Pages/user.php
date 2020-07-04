@@ -1,7 +1,7 @@
 <?php
 
 use YunTaIDC\Template\Template;
-use YunTaIDC\Security\Security;
+use YunTaIDC\Input\Input;
 use YunTaIDC\Database\Database;
 use YunTaIDC\Functions\Functions;
 use YunTaIDC\User\User;
@@ -9,29 +9,22 @@ use YunTaIDC\System\System;
 
 class Pages{
     
-    public $m;
     public $template;
     public $templateLoader;
     public $conf;
     public $site;
-    public $security;
     public $DB;
-    public $System;
-    public $formator;
-    public $getparams;
+    public $Input;
+    public $functions;
     private $user;
     
-    public function __construct($m, $conf, $site, $DB, $getparams){
-        $this->m = $m;
-        $this->security = new Security();
-        $this->DB = $DB;
+    public function __construct($m, $conf, $site){
         $this->conf = $conf;
         $this->site = $site;
-        $this->user = new User("", $DB);
-        $this->formator = new Functions();
-        $this->getparams = $getparams;
-        $this->System = new System();
-        $this->System->LoadDatabase();
+        $this->DB = new Database();
+        $this->user = new User();
+        $this->functions = new Functions();
+        $this->Input = new Input();
         $this->user->GetUserBySessionLogin();
         if($this->isMobile()){
             $this->template = $conf['template_mobile'];
@@ -41,7 +34,7 @@ class Pages{
         $this->templateLoader = new Template($this->template);
         try{
             $this->$m();
-        }catch(Error $e){
+        }catch(Exception $e){
             exit("云塔提醒您：".$e);
         }
     }
@@ -51,12 +44,12 @@ class Pages{
             @header("Location: /index.php?p=user&m=Login");
             exit;
         }else{
-            $user = $this->user->Get();
+            $user = $this->user->GetUserInfo();
         }
-        $servicecount = count($this->System->GetAllService(array('key'=>'userid','value'=>$user['id'])));
-        $wordercount = count($this->System->GetAllWorkorder(array('key'=>'user','value'=>$user['id'])));
-        $invitecount = count($this->System->GetAllUser(array('key'=>'invite','value'=>$user['id'])));
-        $noticecount = count($this->System->GetAllNotice(array('key'=>'site','value'=>'0'))) + count($this->System->GetAllNotice(array('key'=>'site','value'=>$site['id'])));
+        $servicecount = $this->DB->num_rows("SELECT * FROM `ytidc_service` WHERE `userid`='{$user['id']}'");
+        $wordercount = $this->DB->num_rows("SELECT * FROM `ytidc_workorder` WHERE `user`='{$user['id']}'");
+        $wordercount = $this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `invite`='{$user['id']}'");
+        $noticecount = $this->DB->num_rows("SELECT * FROM `ytidc_notice` WHERE `site`='0'") + $this->DB->num_rows("SELECT * FROM `ytidc_notice` WHERE `site`='{$site['id']}'");
         $template_code = array(
         	'site' => $this->site,
         	'config' => $this->conf,
@@ -77,17 +70,17 @@ class Pages{
             @header("Location: /index.php?p=user&m=Index");
             exit;
         }
-        if(!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['authcode'])){
-            $params = $this->security->Input('POST');
-            if($params['authcode'] != $_SESSION['authcode']){
-                @header("Location: /index.php?p=user&m=msg&msg=验证码错误&to=/index/user/Login/");
+        $inputs = $this->Input->getInputs("POST");
+        if(!empty($inputs['username']) && !empty($inputs['password']) && !empty($inputs['authcode'])){
+            if($inputs['authcode'] != $_SESSION['authcode']){
+                @header("Location: /index.php?p=user&m=msg&msg=验证码错误&to=login");
                 exit;
             }
-            if($this->user->GetUserByUsernameLogin($params['username'], $params['password'])){
+            if($this->user->GetUserByUsernameLogin($inputs['username'], $inputs['password'])){
                 @header("Location: /index.php?p=user&m=Index");
                 exit;
             }else{
-                @header("Location: /index.php?p=user&m=msg&msg=账号密码错误&to=/index/user/Login/");
+                @header("Location: /index.php?p=user&m=msg&msg=账号密码错误&to=login");
                 exit;
             }
         }
@@ -106,14 +99,14 @@ class Pages{
             @header("Location: /index.php?p=user&m=Login");
             exit;
         }else{
-            $user = $this->user->Get();
+            $user = $this->user->GetUserInfo();
         }
         $template = $this->templateLoader->GetTemplateContent("user_notice");
         if(!$template){
-            return false;
+            throw new Exception('user.php模板文件为空或不存在');
         }
         $notice_template = $this->templateLoader->find_list_html("公告列表", $template);
-        foreach($this->System->GetAllNotice(array('key'=>'site','value'=>'0')) as $row){
+        foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='0'") as $row){
     		$notice_template_code = array(
     			'id' => $row['id'],
     			'title' => $row['title'],
@@ -121,7 +114,7 @@ class Pages{
         	$notice_template_new = $notice_template_new . $this->templateLoader->template_code_replace($notice_template[1][0], $notice_template_code);
         }
         if($this->site['id'] != 0){
-        	foreach($this->System->GetAllNotice(array('key'=>'site','value'=>'0')) as $row){
+        	foreach($this->DB->get_rows("SELECT * FROM `ytidc_notice` WHERE `site`='{$this->site['id']}'") as $row){
         		$notice_template_code = array(
         			'id' => $row['id'],
         			'title' => $row['title'],
@@ -140,7 +133,7 @@ class Pages{
     }
     
     public function Buy(){
-        $getparams = $this->getparams;
+        $getparams = $this->Input->getInputs('GET');
         if(empty($getparams['type'])){
             $typecontent = $this->DB->get_row("SELECT * FROM `ytidc_type` ORDER BY `weight` DESC");
         }else{
@@ -174,7 +167,7 @@ class Pages{
         $template = str_replace($type_template[0][0], $type_template_new, $template);
         $product_template = $this->templateLoader->find_list_html("产品列表", $template);
         foreach($this->DB->get_rows("SELECT * FROM `ytidc_product` WHERE `type`='{$typecontent['id']}' AND `hidden`='0' ORDER BY `weight` DESC") as $row){
-            $period = json_decode($this->formator->url_decode($row['period']), true);
+            $period = json_decode($this->functions->url_decode($row['period']), true);
         	$product_template_code = array(
         		'name' => $row['name'],
         		'id' => $row['id'],
@@ -195,7 +188,11 @@ class Pages{
     }
     
     public function Register(){
-        $getparams = $this->getparams;
+        if($this->user->isLogin()){
+            @header("Location: ./index.php?p=user&m=index");
+            exit;
+        }
+        $getparams = $this->Input->getInputs('GET');
         $DB = $this->DB;
         if(!empty($getparams['code']) && empty($_SESSION['invite'])){
             if($DB->num_rows("SELECT * FROM `ytidc_user` WHERE `id`='{$getparams['code']}'") == 1){
@@ -206,34 +203,13 @@ class Pages{
         }else{
             $_SESSION['invite'] = 0;
         }
-        if(!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['authcode'])){
-            $username = $this->security->daddslashes($_POST['username']);
-            if($DB->num_rows("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'") != 0){
-          	    @header("Location: /index.php?p=user&m=msg&msg=用户名已被注册");
-            	exit();
-            }
-            $password = $this->security->daddslashes($_POST['password']);
-            $password = md5(md5($password));
-          	$email = $this->security->daddslashes($_POST['email']);
-            if($DB->num_rows("SELECT * FROM `ytidc_user` WHERE `email`='{$email}'") != 0){
-          	    @header("Location: /index.php?p=user&m=msg&msg=邮箱已被使用");
-            	exit();
-            }
-            $invite = $_SESSION['invite'];
-            $authcode = $this->security->daddslashes($_POST['authcode']);
-            if($authcode != $_SESSION['authcode']){
+        $posts = $this->Input->getInputs('POST');
+        if(!empty($posts['username']) && !empty($posts['password']) && !empty($posts['email']) && !empty($posts['authcode'])){
+            if($post['authcode'] != $_SESSION['authcode']){
           	    @header("Location: /index.php?p=user&m=msg&msg=验证码错误");
             	exit();
             }
-          	$domain = $_SERVER['HTTP_HOST'];
-          	$site = $this->site['id'];
-          	if($DB->num_rows("SELECT * FROM `ytidc_grade` WHERE `default`='1'") == 1){
-          		$grade = $DB->get_row("SELECT * FROM `ytidc_grade` WHERE `default`='1'");
-          		$grade = $grade['id'];
-          	}else{
-          		$grade = 0;
-          	}
-          	if($DB->exec("INSERT INTO `ytidc_user` (`username`, `password`, `email`, `money`, `grade`, `invite`, `site`, `status`) VALUE ('{$username}', '{$password}', '{$email}', '0.00', '{$grade}', '{$invite}', '{$site}', '1')")){
+          	if($this->user->RegisterUser($posts['username'], $posts['password'], $posts['email'], 0, $this->site['id'])){
           	    @header("Location: /index.php?p=user&m=msg&msg=注册成功");
           	}else{
           	    @header("Location: /index.php?p=user&m=msg&msg=注册失败，录入数据库失败");
@@ -251,7 +227,7 @@ class Pages{
     }
     
     public function Msg(){
-        $getparams = $this->getparams;
+        $getparams = $this->Input->getInputs("GET");
         $template_code = array(
         	'site' => $this->site,
         	'config' => $this->conf,
@@ -502,7 +478,7 @@ class Pages{
         $product = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$service['product']}'");
         $template = $this->templateLoader->GetTemplateContent("user_service_detail");
         $time_template = $this->templateLoader->find_list_html('周期列表', $template);
-        $pdis = json_decode($this->formator->url_decode($product['period']), true);
+        $pdis = json_decode($this->functions->url_decode($product['period']), true);
         if($user['grade'] != "0" && $this->DB->num_rows("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'") == 1){
           	$grade = $this->DB->get_row("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'");
           	$price = json_decode($grade['price'], true);
@@ -580,7 +556,7 @@ class Pages{
         }else{
             $product = $this->DB->get_row("SELECT * FROM `ytidc_product` WHERE `id`='{$this->getparams['productid']}'");
         }
-        $pdis = json_decode($this->formator->url_decode($product['period']), true);
+        $pdis = json_decode($this->functions->url_decode($product['period']), true);
         if($user['grade'] != "0" && $this->DB->num_rows("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'") == 1){
           	$grade = $this->DB->get_row("SELECT * FROM `ytidc_grade` WHERE `id`='{$user['grade']}'");
         	$price = json_decode($grade['price'], true);
@@ -606,7 +582,7 @@ class Pages{
         }
         $template = str_replace($time_template[0][0], $time_template_new, $template);
         if($this->conf['random_username'] == 1){
-            $service_username = $this->formator->randomkeys(8);
+            $service_username = $this->functions->randomkeys(8);
         }else{
             $service_username = "";
         }

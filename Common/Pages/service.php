@@ -8,7 +8,9 @@ use YunTaIDC\Plugin\PluginBase;
 use YunTaIDC\Plugin\PluginManager;
 use YunTaIDC\Service\Service;
 use YunTaIDC\Product\Product;
+use YunTaIDC\Priceset\Priceset;
 use YunTaIDC\Server\Server;
+use YunTaIDC\Promocode\Promocode;
 
 class Pages{
     
@@ -71,7 +73,25 @@ class Pages{
         }
         $server = $server->GetServerInfo();
         $user = $this->user->GetUserInfo();
-        
+        $priceset = new Priceset($user['priceset']);
+        $priceset = $priceset->GetPricesetInfo();
+        $prices = json_decode($priceset['price']);
+        $promocode = new Promocode();
+        $code = $promocode->GetPromoCodeByCode($params['promocode']);
+        if(!$code){
+            $price = $dis['price'] * $price[$params['productid']];
+        }else{
+            $price = $dis['price'] * $price[$params['productid']] - $code['price'];
+        }
+        $finalmoney = $user['money'] - $price;
+        if($finalmoney < 0){
+            @header("Location: ./index.php?p=user&m=msg&msg=用户余额不足");
+            exit;
+        }else{
+            if(!$this->user->SetUserMoney($finalmoney)){
+                throw new Exception('service.php更新用户余额失败！');
+            }
+        }
         $servicedata = array(
             'username' => $params['username'],
             'password' => $params['password'],

@@ -4,7 +4,7 @@ namespace YunTaIDC\User;
 
 use YunTaIDC\Database\Database;
 use YunTaIDC\Functions\Functions;
-use YunTaIDC\Security\Security;
+use YunTaIDC\Input\Input;
 
 class User{
     
@@ -21,6 +21,23 @@ class User{
                 $this->user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `id`='{$id}'");
             }
         }
+    }
+    
+    public function RegisterUser($username, $password, $email, $invite, $site){
+        $password = md5(md5($password));
+        if($this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `username`='{$username}'") != 0){
+            return false;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `email`='{$email}'") != 0){
+            return false;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_user` WHERE `id`='{$invite}'") == 0){
+            $invite = 0;
+        }
+        if($this->DB->num_rows("SELECT * FROM `ytidc_site` WHERE `id`='{$site}'") == 0){
+            $site = 0;
+        }
+        return $this->DB->exec("INSERT INTO `ytidc_user`(`username`, `password`, `email`, `money`, `grade`, `invite`, `site`, `lastip`, `status`) VALUES ('{$username}','{$password}','{$email}',0.00,0,'{$invite}','{$site}','',1)");
     }
     
     public function GetUserByUsernameLogin($username, $password){
@@ -41,9 +58,9 @@ class User{
     }
     
     public function GetUserBySessionLogin(){
-        $security = new Security();
+        $Input = new Input();
         $functioner = new Functions();
-        $user = $security->daddslashes($_SESSION['yuntauser']);
+        $user = $Input->daddslashes($_SESSION['yuntauser']);
     	$user = $this->DB->get_row("SELECT * FROM `ytidc_user` WHERE `username`='{$user}'");
     	if($user['lastip'] == $functioner->getRealIp() && $_SESSION['userip'] == $functioner->getRealIp()){
     	    $this->user = $user;

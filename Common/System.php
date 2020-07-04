@@ -94,7 +94,7 @@ class System{
             return false;
         }
         require_once(ROOT."/Common/Pages/".$p.'.php');
-        if(new Pages($m, $this->conf, $this->site, $this->DB)){
+        if(new Pages($m, $this->conf, $this->site)){
             return true;
         }else{
             return false;

@@ -16,6 +16,9 @@ class Template{
         if(empty($template)){
             $template = $this->GetTemplateContent($name);
         }
+        if(empty($template)){
+            throw new Exception('Template.php模板文件不存在');
+        }
     	$template = $this->set_template_include_file($template, $this->template);
     	$template = $this->template_code_replace($template, $template_code);
     	return $template;
@@ -41,7 +44,7 @@ class Template{
     
     public function set_template_include_file($template, $template_name){
     	if(empty($template) || empty($template_name)){
-    		return '模板引进参数不足';
+    		throw new Exception('模板引进参数不足');
     	}else{
     		$include_file = $this->find_include_file($template);
     		foreach($include_file[1] as $k => $v){
