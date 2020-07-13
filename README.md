@@ -1,5 +1,6 @@
 # YunTaIDC
 云塔IDC系统【中文】【Chinese】  
+2.5新版本意见收集问卷：https://wj.qq.com/s2/6718525/ac7b/    
 ![Apache-License-2.0](https://badgen.net/badge/License/Apache-License-2.0/blue)![PHP](https://badgen.net/badge/PHP/7.0.0+/orange)![Verison](https://badgen.net/badge/Verison/V0.2.4.10/cyan)![Status](https://badgen.net/badge/Status/Good/green)  
 作者QQ：2119566807  
 作者TG：@kitrosmc  
